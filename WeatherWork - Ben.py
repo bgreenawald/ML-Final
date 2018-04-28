@@ -352,7 +352,7 @@ class DataSet(object):
 
 
 
-# ln[3]:
+# In[ ]:
         
 def build_and_save_d(modelDir,trainX,trainY,cell,cellType,input_dim=1,hidden_dim=100,
                           seq_size = 12,max_itr=200,keep_prob=0.5):
