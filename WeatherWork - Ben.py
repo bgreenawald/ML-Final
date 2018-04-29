@@ -19,7 +19,8 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.contrib import rnn
 from sklearn.preprocessing import MinMaxScaler
-
+import timeit
+import random
 
 # # Preprocessing
 
@@ -133,7 +134,6 @@ df_final.drop(["latitude", "longitude"], inplace=True, axis=1)
 # Convert the data to Farenheit and note the min and max values
 df_final["temperature"] = df_final["temperature"] * 9/5 - 459.67
 
-
 # ### Normalize data through min-max scaling
 
 # In[13]:
@@ -229,6 +229,8 @@ current_city = "Charlotte"
 
 full_df = full_df[full_df["city"] == current_city]
 
+min_dataset = 0.54
+max_dataset = 99.95
 
 # In[4]:
 
@@ -247,59 +249,32 @@ train.drop(["city", "datetime"], inplace=True, axis=1)
 valid.drop(["city", "datetime"], inplace=True, axis=1)
 test.drop(["city", "datetime"], inplace=True, axis=1)
 
-
-# ### Create observations using a sliding sequence window
-
-# In[26]:
-
-
-seq_len = 72
-
-train_x = [] 
-train_y = []
-baseline_err = 0
-
-for i in range(train.shape[0] - seq_len):
-    train_x.append([x for x in train.iloc[i:i+seq_len, :].values])
-    train_y.append([y for y in train.iloc[i+1:i+seq_len+1, 0]])
-    
-    # Keep a running sum of squared error
-    baseline_err += (np.mean(train.iloc[i:i+seq_len, 0]) - train.iloc[i+seq_len, 0]) ** 2
-
-
-# ## Wrapper for dataset object
-
-# In[11]:
-
-
-# Get the mean squared error of the naive model
-
-
 # In[ ]:
 
-
+# Wrapper for data object
 # Modified from Mohammad al Boni
 
 class DataSet(object):
-    def __init__(self, data):
-        self._num_examples = len(data.shape[0])
-        self._x = dt
-        self._y = labels
+    def __init__(self, x, y):
+        self._num_examples = len(x)
+        self._x = x
+        self._y = y
         self._epochs_done = 0
         self._index_in_epoch = 0
         np.random.seed(123456)
         # Shuffle the data
         perm = np.arange(self._num_examples)
+        print(perm)
         np.random.shuffle(perm)
-        self._images = self._images[perm]
-        self._labels = self._labels[perm]
+        self._x = [self._x[i] for i in perm]
+        self._y = [self._y[i] for i in perm]
         random.seed(123456)
     @property
     def features(self):
         return self._x
     @property
     def response(self):
-        return self._labels
+        return self._y
     @property
     def num_examples(self):
         return self._num_examples
@@ -322,21 +297,73 @@ class DataSet(object):
             # Shuffle the data
             perm = np.arange(self._num_examples)
             np.random.shuffle(perm)
-            self._images = self._images[perm]
-            self._labels = self._labels[perm] 
+            self._x = self._x
+            self._y = self._y 
             start = 0
             self._index_in_epoch = batch_size
             done = True
             assert batch_size <= self._num_examples
         end = self._index_in_epoch
     
-        return self._images[start:end], self._labels[start:end], done
+        return self._x[start:end], self._y[start:end], done
 
 
 # ## Create baselines
 
+# ### Create observations using a sliding sequence window
+
+# In[26]:
+
+
+seq_len = 24
+
+train_x = [] 
+train_y = []
+
+for i in range(train.shape[0] - seq_len):
+    train_x.append([x for x in train.iloc[i:i+seq_len, :].values])
+    train_y.append([y for y in train.iloc[i+1:i+seq_len+1, 0]])
+    
+
+
+
+# In[11]:
+
+train_data = DataSet(train_x, train_y)
+del train_x, train_y
+
+
+# In[11]:
+
+valid_x = [] 
+valid_y = []
+
+for i in range(valid.shape[0] - seq_len):
+    valid_x.append([x for x in valid.iloc[i:i+seq_len, :].values])
+    valid_y.append([y for y in valid.iloc[i+1:i+seq_len+1, 0]])
+
+valid_data = DataSet(valid_x, valid_y)
+del valid_x, valid_y
+
 # In[ ]:
 
+test_x = [] 
+test_y = []
+test_baseline_err = []
+
+for i in range(test.shape[0] - seq_len):
+    test_x.append([x for x in test.iloc[i:i+seq_len, :].values])
+    test_y.append([y for y in test.iloc[i+1:i+seq_len+1, 0]])
+    
+    test_baseline_err.append((np.mean(train.iloc[i+seq_len-1, 0]*(max_dataset-min_dataset)+min_dataset) - 
+                              (train.iloc[i+seq_len, 0]*(max_dataset-min_dataset)+min_dataset)) ** 2)
+
+test_data = DataSet(test_x, test_y)
+del test_x, test_y
+
+# Test baseline error of 2.7059362148173807
+
+# In[11]:
 
 # NEED TO
 #   Perform imputation on missing values -- Probably by city and day -- DONE
@@ -354,8 +381,8 @@ class DataSet(object):
 
 # In[ ]:
         
-def build_and_save_d(modelDir,trainX,trainY,cell,cellType,input_dim=1,hidden_dim=100,
-                          seq_size = 12,max_itr=200,keep_prob=0.5):
+def build_and_save_d(modelDir,train,valid,cell,cellType,input_dim=1,hidden_dim=100,
+                          seq_size = 12,max_itr=200,keep_prob=0.5, batch_size=32, num_epochs=10,log=500,save=1000):
     graph = tf.Graph()
     with graph.as_default():
         # input place holders
@@ -365,7 +392,8 @@ def build_and_save_d(modelDir,trainX,trainY,cell,cellType,input_dim=1,hidden_dim
         y = tf.placeholder(tf.float32,[None,seq_size],name="y_in")
         dropout = tf.placeholder(tf.float32,name="dropout_in")
         
-        cell = rnn_cell.DropoutWrapper(cell)
+        # cell = tf.contrib.rnn.MultiRNNCell([cell, cell])
+        cell = tf.nn.rnn_cell.DropoutWrapper(cell)
         # RNN output Shape: [# training examples, sequence length, # hidden] 
         outputs, _ = tf.nn.dynamic_rnn(cell,x,dtype=tf.float32)
         
@@ -404,26 +432,46 @@ def build_and_save_d(modelDir,trainX,trainY,cell,cellType,input_dim=1,hidden_dim
         sess.run(tf.global_variables_initializer())
         # Run for 1000 iterations (1000 is arbitrary, need a validation set to tune!)
         start=timeit.default_timer()
+        epoch_counter = 0 # Keep track of our epochs
+        i = 0 # Keep track of our iterations
+        
         print('Training %s ...'%cellType)
-        for i in range(max_itr): # If we train more, would we overfit? Try 10000
+        while True: # If we train more, would we overfit? Try 10000
+            i += 1
+            trainX, trainY, done = train.next_batch(batch_size)
+            # See if we are done with our epochs
+            if done:
+                epoch_counter += 1
+                print("Done with epoch " + str(epoch_counter))
+                if epoch_counter + 1 > num_epochs:
+                    break
+                
             _, train_err = sess.run([train_op,cost],feed_dict={x:trainX,y:trainY,dropout:keep_prob})
             if i==0:
                 print('  step, train err= %6d: %8.5f' % (0,train_err)) 
-            elif  (i+1) % 100 == 0: 
+            elif  (i+1) % log == 0: 
                 print('  step, train err= %6d: %8.5f' % (i+1,train_err)) 
-            if i>0 and (i+1) % 100 == 0:    
+                
+                # Get validation error
+                valid_err = sess.run(cost,feed_dict={x:valid.features,y:valid.response,dropout:1})
+                print('  step, validation err= %6d: %8.5f' % (i+1,valid_err)) 
+            if i>0 and (i+1) % save == 0:    
                 modelPath= saver.save(sess,"%s/model_%s"%(modelDir,cellType),global_step=i+1)
                 print("model saved:%s"%modelPath)    
+        
+        # Save model at the end
+        modelPath= saver.save(sess,"%s/modelF_%s"%(modelDir,cellType),global_step=i+1)
+        print("model saved:%s"%modelPath)    
         end=timeit.default_timer()        
         print("Training time : %10.5f"%(end-start))
        
-    return 
+    return i + 1
 
 
-def load_and_predict(testX,modelDir,cellType,itr):
+def load_and_predict(test,modelDir,cellType,itr,seq_size):
     with tf.Session() as sess:
         print ("Load model:%s-%s"%(modelDir,itr))
-        saver = tf.train.import_meta_graph("%s/model_%s-%s.meta"%(modelDir,cellType,itr))
+        saver = tf.train.import_meta_graph("%s/modelF_%s-%s.meta"%(modelDir,cellType,itr))
         saver.restore(sess,tf.train.latest_checkpoint("%s"%modelDir))
         graph = tf.get_default_graph()
         # print all nodes in saved graph 
@@ -433,30 +481,54 @@ def load_and_predict(testX,modelDir,cellType,itr):
         dropout= graph.get_tensor_by_name("dropout_in:0")
         y_pred = graph.get_tensor_by_name("y_pred:0")
         
-        predicted_vals_all= sess.run(y_pred, feed_dict={ x: testX, dropout:1})
+        predicted_vals_all= sess.run(y_pred, feed_dict={ x: test.features, dropout:1})
         # Get last item in each predicted sequence:
         predicted_vals = predicted_vals_all[:,seq_size-1]
     return predicted_vals
 
 
-input_dim=1 # dim > 1 for multivariate time series
+input_dim=19 # dim > 1 for multivariate time series
 hidden_dim=100 # number of hiddent units h
-max_itr=500 # number of training iterations
+max_itr=2000 # number of training iterations
 keep_prob=0.5
 modelDir='modelDir'
+log=1000
+save=5000
+batch_size=16
+num_epochs=1
+
 # Different RNN Cell Types
 RNNcell = rnn.BasicRNNCell(hidden_dim)
+cellType = "RNN"
 
 # Build models and save model
-build_and_save_d(modelDir,dataX_train,dataY_train,RNNcell,"RNN",input_dim,hidden_dim,seq_size,max_itr,keep_prob
-                 
-    # Load and predict
-predicted_vals_rnn=load_and_predict(dataX_test,modelDir,"RNN",max_itr)
+end_itr = build_and_save_d(modelDir=modelDir,
+                 train=train_data,
+                 valid=valid_data,
+                 cell=RNNcell,
+                 cellType=cellType,
+                 input_dim=input_dim,
+                 hidden_dim=hidden_dim,
+                 seq_size=seq_len,
+                 max_itr=max_itr,
+                 keep_prob=keep_prob,
+                 batch_size=batch_size,
+                 num_epochs=num_epochs,
+                 log=log,
+                 save=save)
+
+           
+# In[ ]:
+
+
+# Load and predict
+predicted_vals_rnn=load_and_predict(test_data,modelDir,cellType,end_itr,seq_len)
+
 # Compute MSE
 # step 1: denormalize data
 predicted_vals_dnorm_rnn=predicted_vals_rnn*(max_dataset-min_dataset)+min_dataset
 # step 2: get ground-truth
-actual_test=dataset[seq_size+train_size:len(dataset_norm)]
+actual_test= np.array([x[-1] for x in test_data.response])*(max_dataset-min_dataset)+min_dataset
 # step 3: compute MSE
 mse_rnn= ((predicted_vals_dnorm_rnn - actual_test) ** 2).mean()
  
@@ -464,9 +536,21 @@ print("RNN MSE = %10.5f"%mse_rnn)
 
 # Plot predictions
 pred_len=len(predicted_vals_dnorm_rnn)
-train_len=len(dataX_train)
+train_len=len(test_data.features)
+
+pred_avg = []
+actual_avg = []
+
+moving_length = 24
+for i in range(len(actual_test) - moving_length):
+    pred_avg.append(np.mean(predicted_vals_dnorm_rnn[i:i+moving_length]))
+    actual_avg.append(np.mean(actual_test[i:i+moving_length]))
+
 
 plt.figure()
-plt.plot(list(range(seq_size+train_len,seq_size+train_len+train_len)), predicted_vals_dnorm_rnn, color='r', label='RNN')
-plt.plot(list(range(len(dataset))), dataset, color='g', label='Actual')
+plt.plot(list(range(len(actual_test))), predicted_vals_dnorm_rnn, color='r', label=cellType)
+plt.plot(list(range(len(actual_test))), actual_test, color='g', label='Actual')
+plt.plot(list(range(int(moving_length/2), len(actual_test)-int(moving_length/2))), pred_avg, color='y', label="{0} MA".format(cellType))
+plt.plot(list(range(int(moving_length/2), len(actual_test)-int(moving_length/2))), actual_avg, color='b', label="Actual MA")
 plt.legend()
+

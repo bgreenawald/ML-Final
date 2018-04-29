@@ -11955,14 +11955,6 @@ a.anchor-link {
 </div>
 </div>
 
-</div></section><section>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Deal-with-Missing-Values">Deal with Missing Values<a class="anchor-link" href="#Deal-with-Missing-Values">&#182;</a></h3>
-</div>
-</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -11982,33 +11974,14 @@ a.anchor-link {
 </div>
 </div>
 
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Remove the undesired cities and melt the tables to be conducive for joining</span>
-<span class="n">alt_temp_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">temp_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">drop_city</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">),</span> <span class="n">id_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">],</span> <span class="n">var_name</span> <span class="o">=</span> <span class="s1">&#39;city&#39;</span><span class="p">,</span> <span class="n">value_name</span> <span class="o">=</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)</span>
-<span class="n">alt_humid_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">humid_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">drop_city</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">),</span> <span class="n">id_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">],</span> <span class="n">var_name</span> <span class="o">=</span> <span class="s1">&#39;city&#39;</span><span class="p">,</span> <span class="n">value_name</span> <span class="o">=</span> <span class="s1">&#39;humidity&#39;</span><span class="p">)</span>
-<span class="n">alt_press_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">press_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">drop_city</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">),</span> <span class="n">id_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">],</span> <span class="n">var_name</span> <span class="o">=</span> <span class="s1">&#39;city&#39;</span><span class="p">,</span> <span class="n">value_name</span> <span class="o">=</span> <span class="s1">&#39;pressure&#39;</span><span class="p">)</span>
-<span class="n">alt_desc_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">desc_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">drop_city</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">),</span> <span class="n">id_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">],</span> <span class="n">var_name</span> <span class="o">=</span> <span class="s1">&#39;city&#39;</span><span class="p">,</span> <span class="n">value_name</span> <span class="o">=</span> <span class="s1">&#39;weather_description&#39;</span><span class="p">)</span>
-<span class="n">alt_wdir_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">wdir_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">drop_city</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">),</span> <span class="n">id_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">],</span> <span class="n">var_name</span> <span class="o">=</span> <span class="s1">&#39;city&#39;</span><span class="p">,</span> <span class="n">value_name</span> <span class="o">=</span> <span class="s1">&#39;wind_direction&#39;</span><span class="p">)</span>
-<span class="n">alt_wspeed_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">wspeed_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">drop_city</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">),</span> <span class="n">id_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">],</span> <span class="n">var_name</span> <span class="o">=</span> <span class="s1">&#39;city&#39;</span><span class="p">,</span> <span class="n">value_name</span> <span class="o">=</span> <span class="s1">&#39;wind_speed&#39;</span><span class="p">)</span>
-
-<span class="c1"># Set proper indices</span>
-<span class="n">alt_temp_df</span> <span class="o">=</span> <span class="n">alt_temp_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;city&#39;</span><span class="p">,</span> <span class="s1">&#39;datetime&#39;</span><span class="p">])</span>
-<span class="n">alt_humid_df</span> <span class="o">=</span> <span class="n">alt_humid_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;city&#39;</span><span class="p">,</span> <span class="s1">&#39;datetime&#39;</span><span class="p">])</span>
-<span class="n">alt_press_df</span> <span class="o">=</span> <span class="n">alt_press_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;city&#39;</span><span class="p">,</span> <span class="s1">&#39;datetime&#39;</span><span class="p">])</span>
-<span class="n">alt_desc_df</span> <span class="o">=</span> <span class="n">alt_desc_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;city&#39;</span><span class="p">,</span> <span class="s1">&#39;datetime&#39;</span><span class="p">])</span>
-<span class="n">alt_wdir_df</span> <span class="o">=</span> <span class="n">alt_wdir_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;city&#39;</span><span class="p">,</span> <span class="s1">&#39;datetime&#39;</span><span class="p">])</span>
-<span class="n">alt_wspeed_df</span> <span class="o">=</span> <span class="n">alt_wspeed_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;city&#39;</span><span class="p">,</span> <span class="s1">&#39;datetime&#39;</span><span class="p">])</span>
-</pre></div>
-
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Join-tables-together">Join tables together<a class="anchor-link" href="#Join-tables-together">&#182;</a></h3>
 </div>
 </div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -12024,6 +11997,14 @@ a.anchor-link {
 </div>
 </div>
 
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Deal-with-Missing-Values">Deal with Missing Values<a class="anchor-link" href="#Deal-with-Missing-Values">&#182;</a></h3>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -12045,47 +12026,27 @@ a.anchor-link {
 </div>
 </div>
 
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># The whole purpose here is to encode wind direction. It&#39;s not continuous so don&#39;t really want to scale it</span>
-<span class="c1"># Also have more granularity in wind dir if need be.</span>
-<span class="c1">#dir_df = pd.DataFrame({&#39;dir&#39; : [&#39;N&#39;, &#39;NNE&#39;, &#39;NE&#39;, &#39;ENE&#39;, &#39;E&#39;, &#39;ESE&#39;, &#39;SE&#39;, &#39;SSE&#39;, &#39;S&#39;, &#39;SSW&#39;, &#39;SW&#39;, &#39;WSW&#39;, &#39;W&#39;, &#39;WNW&#39;, &#39;NW&#39;, &#39;NNW&#39;, &#39;N&#39;],</span>
-<span class="c1">#                        &#39;lower&#39; : [348.75, 11.25, 33.75, 56.25, 78.75, 101.25, 123.75, 146.25, 168.75, 191.25, 213.75, 236.25, 258.75, 281.25, 303.75, 326.25, 0],</span>
-<span class="c1">#                        &#39;upper&#39; : [360, 33.75, 56.25, 78.75, 101.25, 123.75, 146.25, 168.75, 191.25, 213.75, 236.25, 258.75, 281.25, 303.75, 326.25, 348.75, 11.25]})</span>
-<span class="n">dir_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;dir&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;NE&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;SE&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;SW&#39;</span><span class="p">,</span> <span class="s1">&#39;W&#39;</span><span class="p">,</span> <span class="s1">&#39;NW&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">],</span>
-                        <span class="s1">&#39;lower&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mf">337.5</span><span class="p">,</span> <span class="mf">22.5</span><span class="p">,</span> <span class="mf">67.5</span><span class="p">,</span> <span class="mf">112.5</span><span class="p">,</span> <span class="mi">157</span><span class="p">,</span> <span class="mf">202.5</span><span class="p">,</span> <span class="mf">247.5</span><span class="p">,</span> <span class="mf">292.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-                        <span class="s1">&#39;upper&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">360</span><span class="p">,</span> <span class="mf">67.5</span><span class="p">,</span> <span class="mf">112.5</span><span class="p">,</span> <span class="mi">157</span><span class="p">,</span> <span class="mf">202.5</span><span class="p">,</span> <span class="mf">247.5</span><span class="p">,</span> <span class="mf">292.5</span><span class="p">,</span> <span class="mf">337.5</span><span class="p">,</span> <span class="mf">22.5</span><span class="p">]})</span>
-<span class="c1"># Make a copy to fool around in</span>
-<span class="n">fill_this</span> <span class="o">=</span> <span class="n">df_final</span><span class="p">[</span><span class="s1">&#39;wind_direction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<span class="c1"># And overwrite the copy</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dir_df</span><span class="p">))):</span>
-<span class="c1">#    print(str(dir_df.loc[i,&#39;lower&#39;]) + &quot; and &quot; + str(dir_df.loc[i,&#39;upper&#39;]))</span>
-    <span class="n">fill_this</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_final</span><span class="p">[</span><span class="s1">&#39;wind_direction&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="n">dir_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;lower&#39;</span><span class="p">],</span> <span class="n">dir_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;upper&#39;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">i</span>
-<span class="c1"># This is a bit ugly here; but it maintains any missing values nicely</span>
-<span class="n">df_final</span><span class="p">[</span><span class="s1">&#39;wind_direction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dir_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">fill_this</span><span class="p">,</span> <span class="s1">&#39;dir&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-</pre></div>
-
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Normalize-data-through-min-max-scaling">Normalize data through min-max scaling<a class="anchor-link" href="#Normalize-data-through-min-max-scaling">&#182;</a></h3>
 </div>
 </div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Scaling happens here -- IMPUTATION MUST HAPPEN FIRST</span>
-<span class="n">scale_df</span> <span class="o">=</span> <span class="n">df_final</span><span class="p">[[</span><span class="s1">&#39;latitude&#39;</span><span class="p">,</span> <span class="s1">&#39;longitude&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="s1">&#39;humidity&#39;</span><span class="p">,</span> <span class="s1">&#39;pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;wind_speed&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">scale_df</span> <span class="o">=</span> <span class="n">df_final</span><span class="p">[[</span><span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="s1">&#39;humidity&#39;</span><span class="p">,</span> <span class="s1">&#39;pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;wind_speed&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
 <span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span>
 <span class="c1"># We have access to min and max so we can transform back and forth</span>
 <span class="n">scale_df</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">scale_df</span><span class="p">)</span>
 <span class="n">df_final_scaled</span> <span class="o">=</span> <span class="n">df_final</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<span class="n">df_final_scaled</span><span class="p">[[</span><span class="s1">&#39;latitude&#39;</span><span class="p">,</span> <span class="s1">&#39;longitude&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="s1">&#39;humidity&#39;</span><span class="p">,</span> <span class="s1">&#39;pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;wind_speed&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">scale_df</span>
+<span class="n">df_final_scaled</span><span class="p">[[</span><span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="s1">&#39;humidity&#39;</span><span class="p">,</span> <span class="s1">&#39;pressure&#39;</span><span class="p">,</span> <span class="s1">&#39;wind_speed&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">scale_df</span>
 <span class="n">df_final_scaled</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
@@ -12099,20 +12060,7 @@ a.anchor-link {
 
 <div class="output_area">
 
-<div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[  29.42412    -122.676208    242.33666667    5.          800.
-    0.        ]
-[  47.606209  -71.059769  321.22      100.       1100.         50.      ]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-<div class="prompt output_prompt">Out[11]:</div>
+<div class="prompt output_prompt">Out[10]:</div>
 
 
 
@@ -12136,8 +12084,6 @@ a.anchor-link {
     <tr style="text-align: right;">
       <th></th>
       <th></th>
-      <th>latitude</th>
-      <th>longitude</th>
       <th>temperature</th>
       <th>humidity</th>
       <th>pressure</th>
@@ -12154,16 +12100,12 @@ a.anchor-link {
       <th></th>
       <th></th>
       <th></th>
-      <th></th>
-      <th></th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th rowspan="5" valign="top">Portland</th>
       <th>2012-10-01 12:00:00</th>
-      <td>0.88545</td>
-      <td>0.0</td>
       <td>0.503824</td>
       <td>0.800000</td>
       <td>0.746667</td>
@@ -12173,8 +12115,6 @@ a.anchor-link {
     </tr>
     <tr>
       <th>2012-10-01 13:00:00</th>
-      <td>0.88545</td>
-      <td>0.0</td>
       <td>0.503824</td>
       <td>0.800000</td>
       <td>0.746667</td>
@@ -12184,8 +12124,6 @@ a.anchor-link {
     </tr>
     <tr>
       <th>2012-10-01 14:00:00</th>
-      <td>0.88545</td>
-      <td>0.0</td>
       <td>0.503865</td>
       <td>0.789474</td>
       <td>0.746667</td>
@@ -12195,8 +12133,6 @@ a.anchor-link {
     </tr>
     <tr>
       <th>2012-10-01 15:00:00</th>
-      <td>0.88545</td>
-      <td>0.0</td>
       <td>0.503975</td>
       <td>0.789474</td>
       <td>0.746667</td>
@@ -12206,8 +12142,6 @@ a.anchor-link {
     </tr>
     <tr>
       <th>2012-10-01 16:00:00</th>
-      <td>0.88545</td>
-      <td>0.0</td>
       <td>0.504084</td>
       <td>0.789474</td>
       <td>0.746667</td>
@@ -12225,62 +12159,47 @@ a.anchor-link {
 </div>
 </div>
 
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Collapse a lot of these groupings</span>
-<span class="n">weather_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;scattered clouds&#39;</span> <span class="p">:</span> <span class="s1">&#39;partly_cloudy&#39;</span><span class="p">,</span> <span class="s1">&#39;sky is clear&#39;</span> <span class="p">:</span> <span class="s1">&#39;clear&#39;</span><span class="p">,</span> 
-             <span class="s1">&#39;few clouds&#39;</span> <span class="p">:</span> <span class="s1">&#39;partly_cloudy&#39;</span><span class="p">,</span> <span class="s1">&#39;broken clouds&#39;</span> <span class="p">:</span> <span class="s1">&#39;partly_cloudy&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;overcast clouds&#39;</span> <span class="p">:</span> <span class="s1">&#39;cloudy&#39;</span><span class="p">,</span> <span class="s1">&#39;mist&#39;</span> <span class="p">:</span> <span class="s1">&#39;cloudy&#39;</span><span class="p">,</span> <span class="s1">&#39;haze&#39;</span> <span class="p">:</span> <span class="s1">&#39;cloudy&#39;</span><span class="p">,</span> 
-             <span class="s1">&#39;dust&#39;</span> <span class="p">:</span> <span class="s1">&#39;other&#39;</span><span class="p">,</span> <span class="s1">&#39;fog&#39;</span> <span class="p">:</span> <span class="s1">&#39;cloudy&#39;</span><span class="p">,</span> <span class="s1">&#39;moderate rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;light rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span> <span class="s1">&#39;heavy intensity rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span> <span class="s1">&#39;light intensity drizzle&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;heavy snow&#39;</span> <span class="p">:</span> <span class="s1">&#39;snow&#39;</span><span class="p">,</span> <span class="s1">&#39;snow&#39;</span> <span class="p">:</span> <span class="s1">&#39;snow&#39;</span><span class="p">,</span> <span class="s1">&#39;light snow&#39;</span> <span class="p">:</span> <span class="s1">&#39;snow&#39;</span><span class="p">,</span> <span class="s1">&#39;very heavy rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;thunderstorm&#39;</span> <span class="p">:</span> <span class="s1">&#39;tstorm&#39;</span><span class="p">,</span> <span class="s1">&#39;proximity thunderstorm&#39;</span> <span class="p">:</span> <span class="s1">&#39;tstorm&#39;</span><span class="p">,</span> <span class="s1">&#39;smoke&#39;</span> <span class="p">:</span> <span class="s1">&#39;other&#39;</span><span class="p">,</span> <span class="s1">&#39;freezing rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;snow&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;thunderstorm with light rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;tstorm&#39;</span><span class="p">,</span> <span class="s1">&#39;drizzle&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span> <span class="s1">&#39;sleet&#39;</span> <span class="p">:</span> <span class="s1">&#39;snow&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;thunderstorm with rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;tstorm&#39;</span><span class="p">,</span> <span class="s1">&#39;thunderstorm with heavy rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;tstorm&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;squalls&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span> <span class="s1">&#39;heavy intensity drizzle&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span> <span class="s1">&#39;light shower snow&#39;</span> <span class="p">:</span> <span class="s1">&#39;snow&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;light intensity shower rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span> <span class="s1">&#39;shower rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;heavy intensity shower rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span> <span class="s1">&#39;proximity shower rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;proximity sand/dust whirls&#39;</span> <span class="p">:</span> <span class="s1">&#39;other&#39;</span><span class="p">,</span> <span class="s1">&#39;proximity moderate rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span> <span class="s1">&#39;sand&#39;</span> <span class="p">:</span> <span class="s1">&#39;other&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;shower snow&#39;</span> <span class="p">:</span> <span class="s1">&#39;snow&#39;</span><span class="p">,</span> <span class="s1">&#39;proximity thunderstorm with rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;tstorm&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;sand/dust whirls&#39;</span> <span class="p">:</span> <span class="s1">&#39;other&#39;</span><span class="p">,</span> <span class="s1">&#39;proximity thunderstorm with drizzle&#39;</span> <span class="p">:</span> <span class="s1">&#39;tstorm&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;thunderstorm with drizzle&#39;</span> <span class="p">:</span> <span class="s1">&#39;tstorm&#39;</span><span class="p">,</span> <span class="s1">&#39;thunderstorm with light drizzle&#39;</span> <span class="p">:</span> <span class="s1">&#39;tstorm&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;light rain and snow&#39;</span> <span class="p">:</span> <span class="s1">&#39;snow&#39;</span><span class="p">,</span> <span class="s1">&#39;thunderstorm with heavy drizzle&#39;</span> <span class="p">:</span> <span class="s1">&#39;tstorm&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;ragged thunderstorm&#39;</span> <span class="p">:</span> <span class="s1">&#39;tstorm&#39;</span><span class="p">,</span> <span class="s1">&#39;tornado&#39;</span> <span class="p">:</span> <span class="s1">&#39;other&#39;</span><span class="p">,</span> <span class="s1">&#39;volcanic ash&#39;</span> <span class="p">:</span> <span class="s1">&#39;other&#39;</span><span class="p">,</span> <span class="s1">&#39;shower drizzle&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;heavy shower snow&#39;</span> <span class="p">:</span> <span class="s1">&#39;snow&#39;</span><span class="p">,</span> <span class="s1">&#39;light intensity drizzle rain&#39;</span> <span class="p">:</span> <span class="s1">&#39;rain&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;light shower sleet&#39;</span> <span class="p">:</span> <span class="s1">&#39;snow&#39;</span><span class="p">,</span> <span class="s1">&#39;rain and snow&#39;</span> <span class="p">:</span> <span class="s1">&#39;snow&#39;</span><span class="p">}</span>
-</pre></div>
-
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Make-weather-and-wind-direction-dummy-variables">Make weather and wind direction dummy variables<a class="anchor-link" href="#Make-weather-and-wind-direction-dummy-variables">&#182;</a></h3>
 </div>
 </div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">adj_weather</span> <span class="o">=</span> <span class="p">[</span><span class="n">weather_dict</span><span class="p">[</span><span class="n">val</span><span class="p">]</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">df_final_scaled</span><span class="p">[</span><span class="s1">&#39;weather_description&#39;</span><span class="p">]]</span>
-<span class="n">df_final_scaled</span><span class="p">[</span><span class="s1">&#39;adj_weather&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">adj_weather</span>
-<span class="n">df_final_scaled</span> <span class="o">=</span> <span class="n">df_final_scaled</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;weather_description&#39;</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># And one-hot encode the wind_directions, NOT weather description since it is the response</span>
-<span class="n">df_final_scaled</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">df_final_scaled</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;wind_dir&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;wind_direction&#39;</span><span class="p">])</span>
+<span class="n">df_final_scaled</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">df_final_scaled</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;wind_dir&#39;</span><span class="p">,</span> <span class="s1">&#39;weather&#39;</span><span class="p">],</span> 
+                                 <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;wind_direction&#39;</span><span class="p">,</span> <span class="s1">&#39;adj_weather&#39;</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div></section></section><section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Split-into-train,-test,-and-validation">Split into train, test, and validation<a class="anchor-link" href="#Split-into-train,-test,-and-validation">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Filter by the city of interest</span>
+<span class="n">current_city</span> <span class="o">=</span> <span class="s2">&quot;Charlotte&quot;</span>
+
+<span class="n">full_df</span> <span class="o">=</span> <span class="n">full_df</span><span class="p">[</span><span class="n">full_df</span><span class="p">[</span><span class="s2">&quot;city&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">current_city</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -12290,28 +12209,22 @@ a.anchor-link {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[382]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_final_scaled</span> <span class="o">=</span> <span class="n">df_final_scaled</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="s1">&#39;city&#39;</span><span class="p">)</span>
-<span class="c1"># Train, test, valid split</span>
-<span class="n">train_df</span> <span class="o">=</span> <span class="n">df_final_scaled</span><span class="p">[</span><span class="n">df_final_scaled</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="s1">&#39;2016-01-01 00:00:00&#39;</span><span class="p">]</span>
-<span class="n">test_df</span> <span class="o">=</span> <span class="n">df_final_scaled</span><span class="p">[</span><span class="n">df_final_scaled</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="s1">&#39;2016-01-01 00:00:00&#39;</span><span class="p">]</span>
-<span class="n">test_df</span> <span class="o">=</span> <span class="n">test_df</span><span class="p">[</span><span class="n">test_df</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="s1">&#39;2017-01-01 00:00:00&#39;</span><span class="p">]</span>
-<span class="n">valid_df</span> <span class="o">=</span> <span class="n">df_final_scaled</span><span class="p">[</span><span class="n">df_final_scaled</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="s1">&#39;2017-01-01 00:00:00&#39;</span><span class="p">]</span>
-</pre></div>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">years</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">full_df</span><span class="o">.</span><span class="n">datetime</span><span class="p">])</span>
 
-</div>
-</div>
-</div>
+<span class="n">train</span> <span class="o">=</span> <span class="n">full_df</span><span class="p">[</span><span class="n">years</span> <span class="o">&lt;</span> <span class="s1">&#39;2016&#39;</span><span class="p">]</span>
+<span class="n">valid</span> <span class="o">=</span> <span class="n">full_df</span><span class="p">[</span><span class="n">years</span> <span class="o">==</span> <span class="s1">&#39;2016&#39;</span><span class="p">]</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">full_df</span><span class="p">[</span><span class="n">years</span> <span class="o">&gt;</span> <span class="s1">&#39;2016&#39;</span><span class="p">]</span>
 
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[385]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_df</span>
+<span class="k">if</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">valid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">years</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Partition did not work&quot;</span><span class="p">)</span>
+    
+<span class="c1"># Drop the city and timestamp for all three</span>
+<span class="n">train</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;city&quot;</span><span class="p">,</span> <span class="s2">&quot;datetime&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">valid</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;city&quot;</span><span class="p">,</span> <span class="s2">&quot;datetime&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">test</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;city&quot;</span><span class="p">,</span> <span class="s2">&quot;datetime&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12324,1560 +12237,58 @@ a.anchor-link {
 
 <div class="output_area">
 
-<div class="prompt output_prompt">Out[385]:</div>
+<div class="prompt"></div>
 
 
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/home/benji/miniconda3/lib/python3.6/site-packages/ipykernel_launcher.py:11: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
 
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
+  # This is added back by InteractiveShellApp.init_path()
+/home/benji/miniconda3/lib/python3.6/site-packages/ipykernel_launcher.py:12: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
+  if sys.path[0] == &#39;&#39;:
+/home/benji/miniconda3/lib/python3.6/site-packages/ipykernel_launcher.py:13: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
 
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>city</th>
-      <th>latitude</th>
-      <th>longitude</th>
-      <th>temperature</th>
-      <th>humidity</th>
-      <th>pressure</th>
-      <th>wind_speed</th>
-      <th>wind_dir_E</th>
-      <th>wind_dir_N</th>
-      <th>wind_dir_NE</th>
-      <th>...</th>
-      <th>wind_dir_SE</th>
-      <th>wind_dir_SW</th>
-      <th>wind_dir_W</th>
-      <th>weather_clear</th>
-      <th>weather_cloudy</th>
-      <th>weather_other</th>
-      <th>weather_partly_cloudy</th>
-      <th>weather_rain</th>
-      <th>weather_snow</th>
-      <th>weather_tstorm</th>
-    </tr>
-    <tr>
-      <th>datetime</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>2012-10-01 12:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.503824</td>
-      <td>0.800000</td>
-      <td>0.746667</td>
-      <td>0.00</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-01 13:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.503824</td>
-      <td>0.800000</td>
-      <td>0.746667</td>
-      <td>0.00</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-01 14:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.503865</td>
-      <td>0.789474</td>
-      <td>0.746667</td>
-      <td>0.00</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-01 15:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.503975</td>
-      <td>0.789474</td>
-      <td>0.746667</td>
-      <td>0.00</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-01 16:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.504084</td>
-      <td>0.789474</td>
-      <td>0.746667</td>
-      <td>0.00</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-01 17:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.504193</td>
-      <td>0.778947</td>
-      <td>0.746667</td>
-      <td>0.00</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-01 18:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.504302</td>
-      <td>0.778947</td>
-      <td>0.746667</td>
-      <td>0.00</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-01 19:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.504411</td>
-      <td>0.768421</td>
-      <td>0.746667</td>
-      <td>0.00</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-01 20:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.504521</td>
-      <td>0.768421</td>
-      <td>0.746667</td>
-      <td>0.00</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-01 21:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.504630</td>
-      <td>0.757895</td>
-      <td>0.746667</td>
-      <td>0.00</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-01 22:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.504739</td>
-      <td>0.757895</td>
-      <td>0.746667</td>
-      <td>0.00</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-01 23:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.504848</td>
-      <td>0.757895</td>
-      <td>0.746667</td>
-      <td>0.00</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 00:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.504957</td>
-      <td>0.747368</td>
-      <td>0.746667</td>
-      <td>0.00</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 01:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.505067</td>
-      <td>0.747368</td>
-      <td>0.746667</td>
-      <td>0.00</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 02:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.505176</td>
-      <td>0.736842</td>
-      <td>0.746667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 03:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.505285</td>
-      <td>0.736842</td>
-      <td>0.746667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 04:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.505394</td>
-      <td>0.736842</td>
-      <td>0.746667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 05:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.505504</td>
-      <td>0.726316</td>
-      <td>0.746667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 06:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.505613</td>
-      <td>0.726316</td>
-      <td>0.746667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 07:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.505722</td>
-      <td>0.715789</td>
-      <td>0.746667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 08:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.505831</td>
-      <td>0.715789</td>
-      <td>0.746667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 09:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.505940</td>
-      <td>0.715789</td>
-      <td>0.746667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 10:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.506050</td>
-      <td>0.705263</td>
-      <td>0.746667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 11:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.506159</td>
-      <td>0.705263</td>
-      <td>0.746667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 12:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.506268</td>
-      <td>0.694737</td>
-      <td>0.746667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 13:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.506377</td>
-      <td>0.694737</td>
-      <td>0.746667</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 14:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.506486</td>
-      <td>0.694737</td>
-      <td>0.746667</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 15:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.509275</td>
-      <td>0.747368</td>
-      <td>0.746667</td>
-      <td>0.02</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 16:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.533742</td>
-      <td>0.600000</td>
-      <td>0.746667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2012-10-02 17:00:00</th>
-      <td>Portland</td>
-      <td>0.885450</td>
-      <td>0.0</td>
-      <td>0.577097</td>
-      <td>0.736842</td>
-      <td>0.756667</td>
-      <td>0.00</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>2015-12-30 18:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.369575</td>
-      <td>1.000000</td>
-      <td>0.750000</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-30 19:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.377308</td>
-      <td>0.915789</td>
-      <td>0.756667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-30 20:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.378449</td>
-      <td>1.000000</td>
-      <td>0.753333</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-30 21:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.378679</td>
-      <td>0.968421</td>
-      <td>0.750000</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-30 22:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.379337</td>
-      <td>0.915789</td>
-      <td>0.750000</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-30 23:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.399835</td>
-      <td>0.947368</td>
-      <td>0.770000</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 00:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.379590</td>
-      <td>0.915789</td>
-      <td>0.750000</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 01:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.381750</td>
-      <td>0.947368</td>
-      <td>0.746667</td>
-      <td>0.04</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 02:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.384027</td>
-      <td>1.000000</td>
-      <td>0.743333</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 03:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.389732</td>
-      <td>1.000000</td>
-      <td>0.736667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 04:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.389767</td>
-      <td>0.989474</td>
-      <td>0.733333</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 05:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.397718</td>
-      <td>0.915789</td>
-      <td>0.730000</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 06:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.401268</td>
-      <td>1.000000</td>
-      <td>0.726667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 07:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.403550</td>
-      <td>0.852632</td>
-      <td>0.726667</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 08:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.406592</td>
-      <td>0.852632</td>
-      <td>0.720000</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 09:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.406465</td>
-      <td>1.000000</td>
-      <td>0.720000</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 10:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.407733</td>
-      <td>1.000000</td>
-      <td>0.720000</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 11:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.408181</td>
-      <td>1.000000</td>
-      <td>0.720000</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 12:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.407226</td>
-      <td>1.000000</td>
-      <td>0.720000</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 13:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.408874</td>
-      <td>0.926316</td>
-      <td>0.720000</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 14:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.424847</td>
-      <td>1.000000</td>
-      <td>0.720000</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 15:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.435369</td>
-      <td>1.000000</td>
-      <td>0.720000</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 16:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.460342</td>
-      <td>0.852632</td>
-      <td>0.716667</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 17:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.460455</td>
-      <td>0.852632</td>
-      <td>0.716667</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 18:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.474414</td>
-      <td>0.631579</td>
-      <td>0.713333</td>
-      <td>0.10</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 19:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.467188</td>
-      <td>1.000000</td>
-      <td>0.713333</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 20:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.467077</td>
-      <td>1.000000</td>
-      <td>0.713333</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 21:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.459201</td>
-      <td>0.631579</td>
-      <td>0.716667</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 22:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.447792</td>
-      <td>0.621053</td>
-      <td>0.720000</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2015-12-31 23:00:00</th>
-      <td>Boston</td>
-      <td>0.711376</td>
-      <td>1.0</td>
-      <td>0.447672</td>
-      <td>0.621053</td>
-      <td>0.720000</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-  </tbody>
-</table>
-<p>740376 rows × 22 columns</p>
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
+  del sys.path[0]
+</pre>
 </div>
-</div>
-
 </div>
 
 </div>
 </div>
 
+</div></section><section>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Create-observations-using-a-sliding-sequence-window">Create observations using a sliding sequence window<a class="anchor-link" href="#Create-observations-using-a-sliding-sequence-window">&#182;</a></h3>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[386]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Write for distribution</span>
-<span class="c1">#df_final_scaled.to_csv(&#39;~/Downloads/df_weather_scaled_encoded&#39;)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">seq_len</span> <span class="o">=</span> <span class="mi">72</span>
+
+<span class="n">train_x</span> <span class="o">=</span> <span class="p">[]</span> 
+<span class="n">train_y</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">baseline_err</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">seq_len</span><span class="p">):</span>
+    <span class="n">train_x</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">seq_len</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="p">])</span>
+    <span class="n">train_y</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">y</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">seq_len</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+    
+    <span class="c1"># Keep a running sum of squared error</span>
+    <span class="n">baseline_err</span> <span class="o">+=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">seq_len</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">seq_len</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
 </pre></div>
 
 </div>
@@ -13885,25 +12296,20 @@ a.anchor-link {
 </div>
 
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[334]:</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">practice</span> <span class="o">=</span> <span class="n">test_df</span><span class="p">[</span><span class="n">test_df</span><span class="p">[</span><span class="s1">&#39;city&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Philadelphia&#39;</span><span class="p">]</span>
-</pre></div>
-
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Wrapper-for-dataset-object">Wrapper for dataset object<a class="anchor-link" href="#Wrapper-for-dataset-object">&#182;</a></h2>
 </div>
 </div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[339]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">practice</span><span class="o">.</span><span class="n">shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Get the mean squared error of the naive model</span>
 </pre></div>
 
 </div>
@@ -13916,13 +12322,13 @@ a.anchor-link {
 
 <div class="output_area">
 
-<div class="prompt output_prompt">Out[339]:</div>
+<div class="prompt output_prompt">Out[11]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(8784, 75)</pre>
+<pre>[0.5871117684326519, 0.5871139515807613]</pre>
 </div>
 
 </div>
@@ -13933,1568 +12339,76 @@ a.anchor-link {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[338]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">seq_len</span> <span class="o">=</span> <span class="mi">24</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Modified from Mohammad al Boni</span>
+
+<span class="k">class</span> <span class="nc">DataSet</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_examples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">=</span> <span class="n">dt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="n">labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_epochs_done</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_in_epoch</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123456</span><span class="p">)</span>
+        <span class="c1"># Shuffle the data</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_examples</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_images</span><span class="p">[</span><span class="n">perm</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">[</span><span class="n">perm</span><span class="p">]</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123456</span><span class="p">)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_examples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_examples</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">epochs_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_epochs_done</span>
+
+    <span class="k">def</span> <span class="nf">reset_batch_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_in_epoch</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">def</span> <span class="nf">next_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the next `batch_size` examples from this data set.&quot;&quot;&quot;</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_in_epoch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_in_epoch</span> <span class="o">+=</span> <span class="n">batch_size</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_in_epoch</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_examples</span><span class="p">:</span>
+            <span class="c1"># After each epoch we update this</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_epochs_done</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c1"># Shuffle the data</span>
+            <span class="n">perm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_examples</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_images</span><span class="p">[</span><span class="n">perm</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">[</span><span class="n">perm</span><span class="p">]</span> 
+            <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_index_in_epoch</span> <span class="o">=</span> <span class="n">batch_size</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">assert</span> <span class="n">batch_size</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_examples</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_in_epoch</span>
+    
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_images</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="n">done</span>
 </pre></div>
 
 </div>
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt output_prompt">Out[338]:</div>
-
-
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>city</th>
-      <th>latitude</th>
-      <th>longitude</th>
-      <th>temperature</th>
-      <th>humidity</th>
-      <th>pressure</th>
-      <th>wind_speed</th>
-      <th>wind_dir_E</th>
-      <th>wind_dir_ENE</th>
-      <th>wind_dir_ESE</th>
-      <th>...</th>
-      <th>weather_thunderstorm</th>
-      <th>weather_thunderstorm with drizzle</th>
-      <th>weather_thunderstorm with heavy drizzle</th>
-      <th>weather_thunderstorm with heavy rain</th>
-      <th>weather_thunderstorm with light drizzle</th>
-      <th>weather_thunderstorm with light rain</th>
-      <th>weather_thunderstorm with rain</th>
-      <th>weather_tornado</th>
-      <th>weather_very heavy rain</th>
-      <th>weather_volcanic ash</th>
-    </tr>
-    <tr>
-      <th>datetime</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>2016-01-01 00:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.456666</td>
-      <td>0.810526</td>
-      <td>0.733333</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 01:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.456429</td>
-      <td>0.810526</td>
-      <td>0.733333</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 02:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.432100</td>
-      <td>0.810526</td>
-      <td>0.756667</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 03:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.450074</td>
-      <td>0.810526</td>
-      <td>0.733333</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 04:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.441454</td>
-      <td>0.800000</td>
-      <td>0.733333</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 05:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.440772</td>
-      <td>0.800000</td>
-      <td>0.733333</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 06:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.436003</td>
-      <td>0.578947</td>
-      <td>0.733333</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 07:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.432960</td>
-      <td>0.673684</td>
-      <td>0.730000</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 08:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.429442</td>
-      <td>0.673684</td>
-      <td>0.733333</td>
-      <td>0.02</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 09:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.431819</td>
-      <td>0.726316</td>
-      <td>0.730000</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 10:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.427636</td>
-      <td>0.726316</td>
-      <td>0.730000</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 11:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.427255</td>
-      <td>0.578947</td>
-      <td>0.730000</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 12:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.424974</td>
-      <td>0.673684</td>
-      <td>0.730000</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 13:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.425988</td>
-      <td>0.526316</td>
-      <td>0.733333</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 14:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.432833</td>
-      <td>0.673684</td>
-      <td>0.730000</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 15:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.438031</td>
-      <td>0.494737</td>
-      <td>0.733333</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 16:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.441073</td>
-      <td>0.631579</td>
-      <td>0.726667</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 17:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.438411</td>
-      <td>0.621053</td>
-      <td>0.723333</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 18:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.438389</td>
-      <td>0.610526</td>
-      <td>0.723333</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 19:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.435622</td>
-      <td>0.578947</td>
-      <td>0.723333</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 20:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.436383</td>
-      <td>0.578947</td>
-      <td>0.723333</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 21:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.430044</td>
-      <td>0.526316</td>
-      <td>0.723333</td>
-      <td>0.10</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 22:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.429969</td>
-      <td>0.526316</td>
-      <td>0.723333</td>
-      <td>0.10</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-01 23:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.418255</td>
-      <td>0.526316</td>
-      <td>0.726667</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-02 00:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.418226</td>
-      <td>0.526316</td>
-      <td>0.726667</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-02 01:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.403382</td>
-      <td>0.547368</td>
-      <td>0.750000</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-02 02:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.402028</td>
-      <td>0.568421</td>
-      <td>0.730000</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-02 03:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.388971</td>
-      <td>0.547368</td>
-      <td>0.726667</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-02 04:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.388961</td>
-      <td>0.547368</td>
-      <td>0.726667</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-01-02 05:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.388337</td>
-      <td>0.673684</td>
-      <td>0.726667</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>2016-12-30 18:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.441454</td>
-      <td>0.484211</td>
-      <td>0.690000</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-30 19:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.433721</td>
-      <td>0.526316</td>
-      <td>0.690000</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-30 20:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.439425</td>
-      <td>0.452632</td>
-      <td>0.693333</td>
-      <td>0.14</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-30 21:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.436890</td>
-      <td>0.442105</td>
-      <td>0.696667</td>
-      <td>0.10</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-30 22:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.431312</td>
-      <td>0.442105</td>
-      <td>0.700000</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-30 23:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.416100</td>
-      <td>0.368421</td>
-      <td>0.710000</td>
-      <td>0.12</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 00:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.411029</td>
-      <td>0.526316</td>
-      <td>0.710000</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 01:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.405958</td>
-      <td>0.536842</td>
-      <td>0.713333</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 02:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.402535</td>
-      <td>0.557895</td>
-      <td>0.716667</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 03:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.400634</td>
-      <td>0.557895</td>
-      <td>0.720000</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 04:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.396577</td>
-      <td>0.557895</td>
-      <td>0.720000</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 05:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.384788</td>
-      <td>0.547368</td>
-      <td>0.730000</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 06:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.380477</td>
-      <td>0.515789</td>
-      <td>0.726667</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 07:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.372111</td>
-      <td>0.715789</td>
-      <td>0.726667</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 08:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.370716</td>
-      <td>0.610526</td>
-      <td>0.730000</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 09:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.367040</td>
-      <td>0.663158</td>
-      <td>0.730000</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 10:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.361589</td>
-      <td>0.610526</td>
-      <td>0.733333</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 11:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.358927</td>
-      <td>0.663158</td>
-      <td>0.733333</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 12:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.357152</td>
-      <td>0.715789</td>
-      <td>0.733333</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 13:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.355250</td>
-      <td>0.663158</td>
-      <td>0.733333</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 14:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.360955</td>
-      <td>0.610526</td>
-      <td>0.733333</td>
-      <td>0.04</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 15:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.389732</td>
-      <td>0.610526</td>
-      <td>0.733333</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 16:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.409634</td>
-      <td>0.568421</td>
-      <td>0.733333</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 17:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.433721</td>
-      <td>0.452632</td>
-      <td>0.730000</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 18:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.450327</td>
-      <td>0.452632</td>
-      <td>0.723333</td>
-      <td>0.06</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 19:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.466681</td>
-      <td>0.315789</td>
-      <td>0.716667</td>
-      <td>0.10</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 20:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.466047</td>
-      <td>0.452632</td>
-      <td>0.716667</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 21:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.468582</td>
-      <td>0.452632</td>
-      <td>0.716667</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 22:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.467695</td>
-      <td>0.452632</td>
-      <td>0.713333</td>
-      <td>0.08</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2016-12-31 23:00:00</th>
-      <td>Philadelphia</td>
-      <td>0.579043</td>
-      <td>0.92049</td>
-      <td>0.464906</td>
-      <td>0.494737</td>
-      <td>0.710000</td>
-      <td>0.10</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>...</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-  </tbody>
-</table>
-<p>8784 rows × 75 columns</p>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Create-baselines">Create baselines<a class="anchor-link" href="#Create-baselines">&#182;</a></h2>
 </div>
 </div>
-
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
