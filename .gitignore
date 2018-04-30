@@ -1,3 +1,5 @@
 *.csv
 modelDir/
-modelDir2/
+modelDir*/
+static/
+deck*/

@@ -13,7 +13,7 @@ import tensorflow as tf
 from tensorflow.contrib import rnn
 import timeit
 import random
-
+from sklearn.metrics import f1_score
 # # Preprocessing
 
 # ### Read in the files
@@ -158,6 +158,7 @@ del test_x, test_y
 
 def build_and_save_d2(modelDir,train,valid,cell,cellType,input_dim=1,hidden_dim=100,
                           seq_size = 12,max_itr=200,keep_prob=0.5, batch_size=32, num_epochs=10,log=500,save=1000):
+    tf.reset_default_graph()
     graph2 = tf.Graph()
     with graph2.as_default():
         # input place holders
@@ -248,7 +249,7 @@ hidden_dim=100 # number of hiddent units h
 max_itr=2000 # number of training iterations
 keep_prob=0.5
 modelDir='modelDir2'
-log=100
+log=500
 save=5000
 batch_size=16
 num_epochs=1
@@ -304,3 +305,12 @@ actual_test= np.array([x[-1] for x in test_data2.response])
 actual_test= np.array([x[-1] for x in test_data2.response])
 
 sum(np.argmax(actual_test, axis=1) == np.argmax(predicted_vals_rnn, axis=1))/len(actual_test)
+
+# In[ ]:
+
+# Calculate f1_score
+preds = np.zeros([len(actual_test), 7])
+for i in range(len(actual_test)):
+    preds[i, np.argmax(predicted_vals_rnn[i])] = 1
+
+f1_score(actual_test, preds, average="weighted")

@@ -21,8 +21,12 @@ from tensorflow.contrib import rnn
 from sklearn.preprocessing import MinMaxScaler
 import timeit
 import random
-
+import sys
 # # Preprocessing
+
+###########################################################################################################################
+############# Preprocessing ##############################################################################################
+###########################################################################################################################
 
 # ### Read in the files
 
@@ -212,8 +216,23 @@ df_final_scaled.to_csv('df_weather_scaled_encoded.csv')
 # Clean up the local environment
 get_ipython().run_line_magic('reset', '')
 
+###########################################################################################################################
+############# Part 1: Temperature Prediction ##############################################################################
+###########################################################################################################################
+# In[2]:
 
 # ## Split into train, test, and validation
+
+
+import pandas as pd
+from pandas import Series, DataFrame
+import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow as tf
+from tensorflow.contrib import rnn
+import random
+import timeit
+import sys
 
 # In[2]:
 
@@ -229,12 +248,12 @@ current_city = "Charlotte"
 
 full_df = full_df[full_df["city"] == current_city]
 
-min_dataset = 0.54
+min_dataset = 0.5149999994000041
 max_dataset = 99.95
 
 # In[4]:
 
-
+# Extract
 years = np.array([y[0:4] for y in full_df.datetime])
 
 train = full_df[years < '2016']
@@ -264,7 +283,6 @@ class DataSet(object):
         np.random.seed(123456)
         # Shuffle the data
         perm = np.arange(self._num_examples)
-        print(perm)
         np.random.shuffle(perm)
         self._x = [self._x[i] for i in perm]
         self._y = [self._y[i] for i in perm]
@@ -314,54 +332,89 @@ class DataSet(object):
 
 # In[26]:
 
-
+# Define size of sequence, 1 day for now
 seq_len = 24
 
-train_x = [] 
-train_y = []
+# Wrapper function to perform the entire creation of observations given the subset
+# data. Can specify sequence_size, lookahead, response (temp means 'temperature'),
+# and whether you want a greedy baseline.
+def create_observations(train, test, valid, seq_size = 24, lookahead = 1, temp = True, baseline=False):
 
-for i in range(train.shape[0] - seq_len):
-    train_x.append([x for x in train.iloc[i:i+seq_len, :].values])
-    train_y.append([y for y in train.iloc[i+1:i+seq_len+1, 0]])
+    train_x = [] 
+    train_y = []
+    # If we are doing the temperature variable, extract that feature
+    if temp: 
+        for i in range(train.shape[0] - seq_len - lookahead + 1):
+            # Slide over input, storing each "sequence size" window
+            train_x.append([x for x in train.iloc[i:i+seq_len, :].values])
+            train_y.append([y for y in train.iloc[i+lookahead:i+seq_len+lookahead, 0]])
+    # Otherwise, extract out the weather type
+    else:
+        for i in range(train.shape[0] - seq_len  - lookahead + 1):
+            train_x.append([x for x in train.iloc[i:i+seq_len, :].values])
+            train_y.append([y for y in train.iloc[i+lookahead:i+seq_len+lookahead, -7:].values])
     
-
-
-
-# In[11]:
-
-train_data = DataSet(train_x, train_y)
-del train_x, train_y
-
-
-# In[11]:
-
-valid_x = [] 
-valid_y = []
-
-for i in range(valid.shape[0] - seq_len):
-    valid_x.append([x for x in valid.iloc[i:i+seq_len, :].values])
-    valid_y.append([y for y in valid.iloc[i+1:i+seq_len+1, 0]])
-
-valid_data = DataSet(valid_x, valid_y)
-del valid_x, valid_y
-
-# In[ ]:
-
-test_x = [] 
-test_y = []
-test_baseline_err = []
-
-for i in range(test.shape[0] - seq_len):
-    test_x.append([x for x in test.iloc[i:i+seq_len, :].values])
-    test_y.append([y for y in test.iloc[i+1:i+seq_len+1, 0]])
+    # Convert to a Dataset object
+    train_data = DataSet(train_x, train_y)
     
-    test_baseline_err.append((np.mean(train.iloc[i+seq_len-1, 0]*(max_dataset-min_dataset)+min_dataset) - 
-                              (train.iloc[i+seq_len, 0]*(max_dataset-min_dataset)+min_dataset)) ** 2)
+    # Repeat the above process on the validation set
+    valid_x = [] 
+    valid_y = []
+    
+    # If we are doing the temperature variable, extract that feature
+    if temp: 
+        for i in range(valid.shape[0] - seq_len - lookahead + 1):
+            # Slide over input, storing each "sequence size" window
+            valid_x.append([x for x in valid.iloc[i:i+seq_len, :].values])
+            valid_y.append([y for y in valid.iloc[i+lookahead:i+seq_len+lookahead, 0]])
+    # Otherwise, extract out the weather type
+    else:
+        for i in range(valid.shape[0] - seq_len - lookahead + 1):
+            valid_x.append([x for x in valid.iloc[i:i+seq_len, :].values])
+            valid_y.append([y for y in valid.iloc[i+lookahead:i+seq_len+lookahead, -7:].values])
+    
+    valid_data = DataSet(valid_x, valid_y)
 
-test_data = DataSet(test_x, test_y)
-del test_x, test_y
 
-# Test baseline error of 2.7059362148173807
+    # Repeat for test except also track the baseline prediction error
+    test_x = [] 
+    test_y = []
+    test_baseline_err = []
+    
+    if temp:
+        for i in range(test.shape[0] - seq_len - lookahead + 1):
+            test_x.append([x for x in test.iloc[i:i+seq_len, :].values])
+            test_y.append([y for y in test.iloc[i+lookahead:i+seq_len+lookahead, 0]])
+            
+            # Get the baseline prediction error by taking the MSE between the current hour and the 
+            # temperature of the next hour. This is the trivial case where our prediction for temp
+            # is just the current temp
+            if baseline:
+                test_baseline_err.append((np.mean(train.iloc[i+seq_len - 1, 0]*(max_dataset-min_dataset)+min_dataset) - 
+                                      (train.iloc[i+seq_len + lookahead - 1, 0]*(max_dataset-min_dataset)+min_dataset)) ** 2)
+        
+        if baseline:
+            print("Baseline error of: " + str(np.mean(test_baseline_err)))
+        # Test baseline error of 2.7059362148173807
+    else:
+        for i in range(test.shape[0] - seq_len - lookahead + 1):
+            test_x.append([x for x in test.iloc[i:i+seq_len, :].values])
+            test_y.append([y for y in test.iloc[i+lookahead:i+seq_len+lookahead, 0]])
+        
+            if baseline:        
+                # Compare current weather type with next weather type
+                test_baseline_err.append(test.iloc[i + seq_len - 1, -7:].values == test.iloc[i + seq_len + lookahead - 1, -7:].values)
+                
+        if baseline:
+            print("Baseline error of: " + str(np.mean(test_baseline_err)))
+        # Test baseline error of 2.7059362148173807
+    
+    test_data = DataSet(test_x, test_y)
+    
+    return train_data, valid_data, test_data
+
+
+train_data,valid_data,test_data = create_observations(train, valid, test, seq_size=seq_len, lookahead=4, baseline=True)
 
 # In[11]:
 
@@ -382,7 +435,9 @@ del test_x, test_y
 # In[ ]:
         
 def build_and_save_d(modelDir,train,valid,cell,cellType,input_dim=1,hidden_dim=100,
-                          seq_size = 12,max_itr=200,keep_prob=0.5, batch_size=32, num_epochs=10,log=500,save=1000):
+                          seq_size = 12,max_itr=200,keep_prob=0.5, batch_size=32, num_epochs=10, log=500,
+                            early_stopping=3, learning_rate=0.01):
+    tf.reset_default_graph()
     graph = tf.Graph()
     with graph.as_default():
         # input place holders
@@ -392,10 +447,18 @@ def build_and_save_d(modelDir,train,valid,cell,cellType,input_dim=1,hidden_dim=1
         y = tf.placeholder(tf.float32,[None,seq_size],name="y_in")
         dropout = tf.placeholder(tf.float32,name="dropout_in")
         
-        # cell = tf.contrib.rnn.MultiRNNCell([cell, cell])
-        cell = tf.nn.rnn_cell.DropoutWrapper(cell)
+        # Function to wrap each cell with dropout
+        def wrap_cell(cell, keep_prob):
+            drop = tf.nn.rnn_cell.DropoutWrapper(cell, output_keep_prob=keep_prob)
+            return drop
+        
+        cells = tf.nn.rnn_cell.MultiRNNCell(
+                 [wrap_cell(cell,keep_prob) for cell in cell]
+         )
+
+        # cell = tf.nn.rnn_cell.DropoutWrapper(cell)
         # RNN output Shape: [# training examples, sequence length, # hidden] 
-        outputs, _ = tf.nn.dynamic_rnn(cell,x,dtype=tf.float32)
+        outputs, _ = tf.nn.dynamic_rnn(cells,x,dtype=tf.float32)
         
         
         # weights for output dense layer (i.e., after RNN)
@@ -423,8 +486,10 @@ def build_and_save_d(modelDir,train,valid,cell,cellType,input_dim=1,hidden_dim=1
         
         # Cost & Training Step
         cost = tf.reduce_mean(tf.square(y_pred-y))
-        train_op = tf.train.AdamOptimizer(learning_rate=0.01).minimize(cost)
+        train_op = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
         saver=tf.train.Saver()
+        
+        
         
         # Run Session
     with tf.Session(graph=graph) as sess:
@@ -434,44 +499,85 @@ def build_and_save_d(modelDir,train,valid,cell,cellType,input_dim=1,hidden_dim=1
         start=timeit.default_timer()
         epoch_counter = 0 # Keep track of our epochs
         i = 0 # Keep track of our iterations
-        
+        min_validation_err = sys.float_info.max # Start min error at biggest number
+        min_validation_itr = 0 # Keep track of the smallest validation error we have seen so far
+        early_stopping_counter = 0 # Counter to see if we have acheived early stopping
+        min_denorm_err = None
         print('Training %s ...'%cellType)
         while True: # If we train more, would we overfit? Try 10000
-            i += 1
-            trainX, trainY, done = train.next_batch(batch_size)
+            i += 1 # Increment counter
+            trainX, trainY, done = train.next_batch(batch_size) # Get train batch
             # See if we are done with our epochs
             if done:
                 epoch_counter += 1
                 print("Done with epoch " + str(epoch_counter))
-                if epoch_counter + 1 > num_epochs:
+                if epoch_counter >= num_epochs:
                     break
-                
+            
+            # Pass the data through the network
             _, train_err = sess.run([train_op,cost],feed_dict={x:trainX,y:trainY,dropout:keep_prob})
             if i==0:
-                print('  step, train err= %6d: %8.5f' % (0,train_err)) 
+                print('  step, train err= %6d: %8.5f' % (0,train_err))
+            # Every 'log' steps, print out train error and validation error.
+            # Update early stopping at these points
             elif  (i+1) % log == 0: 
                 print('  step, train err= %6d: %8.5f' % (i+1,train_err)) 
                 
-                # Get validation error
-                valid_err = sess.run(cost,feed_dict={x:valid.features,y:valid.response,dropout:1})
+                # Get validation error on the full validation set
+                valid_err, predicted_vals_rnn = sess.run([cost, y_pred],feed_dict={x:valid.features,y:valid.response,dropout:1})
+                
+                # Compute denormalized MSE
+                # step 1: denormalize data
+                # If seq_len greater than 1, get only the last element
+                if seq_size > 1:
+                    predicted_vals_rnn = predicted_vals_rnn[:,seq_size-1]
+                predicted_vals_dnorm_rnn=predicted_vals_rnn*(max_dataset-min_dataset)+min_dataset
+                # step 2: get ground-truth, also must be denormalized
+                actual_test= np.array([x[-1] for x in valid.response])*(max_dataset-min_dataset)+min_dataset
+                # step 3: compute MSE
+                mse_rnn= ((predicted_vals_dnorm_rnn - actual_test) ** 2).mean()
                 print('  step, validation err= %6d: %8.5f' % (i+1,valid_err)) 
-            if i>0 and (i+1) % save == 0:    
-                modelPath= saver.save(sess,"%s/model_%s"%(modelDir,cellType),global_step=i+1)
-                print("model saved:%s"%modelPath)    
-        
-        # Save model at the end
-        modelPath= saver.save(sess,"%s/modelF_%s"%(modelDir,cellType),global_step=i+1)
-        print("model saved:%s"%modelPath)    
+                print('  step, denorm validation err= %6d: %8.5f' % (i+1,mse_rnn)) 
+                
+                # Check early stopping
+                early_stopping_counter += 1
+                # If we have smaller validation error, reset counter and
+                # assign new smallest validation error. Also store the
+                # current iterqtion as the iteration where the current min is
+                if valid_err < min_validation_err:
+                    min_validation_err = valid_err
+                    min_validation_itr = i + 1
+                    early_stopping_counter = 0
+                    min_denorm_err = mse_rnn
+                    
+                    # Store the current best model
+                    modelPath= saver.save(sess,"%s/model_%s"%(modelDir,cellType),global_step=i+1)
+                    print("model saved:%s"%modelPath) 
+                
+                # Break if we achieve early stopping
+                if early_stopping_counter > early_stopping:
+                    break
+                   
         end=timeit.default_timer()        
         print("Training time : %10.5f"%(end-start))
+        
+        # Log the results to a file
+        with open(modelDir + "/results.txt", 'a+') as file:
+            file.write(cellType + "\n")
+            file.write("Time taken: " + str(end - start) + "\n")
+            file.write("Itr stopped: " + str(min_validation_itr) + "\n")
+            file.write("Min validation error: " + str(min_validation_err) + "\n")
+            file.write("Denormalized validation error: " + str(min_denorm_err) + "\n\n")
+            
        
-    return i + 1
+    return min_validation_itr, min_validation_err
 
 
 def load_and_predict(test,modelDir,cellType,itr,seq_size):
+    # Restore the session
     with tf.Session() as sess:
         print ("Load model:%s-%s"%(modelDir,itr))
-        saver = tf.train.import_meta_graph("%s/modelF_%s-%s.meta"%(modelDir,cellType,itr))
+        saver = tf.train.import_meta_graph("%s/model_%s-%s.meta"%(modelDir,cellType,itr))
         saver.restore(sess,tf.train.latest_checkpoint("%s"%modelDir))
         graph = tf.get_default_graph()
         # print all nodes in saved graph 
@@ -481,30 +587,346 @@ def load_and_predict(test,modelDir,cellType,itr,seq_size):
         dropout= graph.get_tensor_by_name("dropout_in:0")
         y_pred = graph.get_tensor_by_name("y_pred:0")
         
+        # Feed entire test set to get predictions
         predicted_vals_all= sess.run(y_pred, feed_dict={ x: test.features, dropout:1})
         # Get last item in each predicted sequence:
         predicted_vals = predicted_vals_all[:,seq_size-1]
     return predicted_vals
 
 
+"""
+# Perform a crude grid search
+from itertools import product
+# Define learning rates, dropout
+params = [[0.1, 0.01, 0.001], [0.25, 0.5, 0.75]]
+# Iterate over all combinations and test model
+# with those parameters, storing the min
+min_param_val = sys.float_info.max
+min_param_elems = None
+for elem in product(*params):
+    # Unpack the values
+    learning_rate, keep_prob = elem
+    RNNcell = [rnn.BasicLSTMCell(hidden_dim) for _ in range(n_layers)]
+    cellType = "LSTM"
+    
+    # Build models and save model
+    end_itr, min_err = build_and_save_d(modelDir=modelDir,
+                     train=train_data,
+                     valid=valid_data,
+                     cell=RNNcell,
+                     cellType=cellType,
+                     input_dim=input_dim,
+                     hidden_dim=hidden_dim,
+                     seq_size=seq_len,
+                     keep_prob=keep_prob,
+                     batch_size=batch_size,
+                     num_epochs=num_epochs,
+                     log=log,
+                     early_stopping=early_stopping,
+                     learning_rate=learning_rate)
+    # See if we have a new low error
+    if min_err < min_param_val:
+        min_param_val = min_err
+        min_param_elems = elem
+    print("Min validation error " + str(min_err) + " for elems " + str(elem))
+
+print("Global validation error " + str(min_param_val) + " for elems " + str(min_param_elems))
+"""
+
+# Grid search on learning rate and dropout
+
+# RNN
+
+#Min validation error 0.015986204 for elems (0.1, 0.25)
+#Min validation error 0.015794938 for elems (0.1, 0.5)
+#Min validation error 0.015503254 for elems (0.1, 0.75)
+#Min validation error 0.012949656 for elems (0.01, 0.25)
+#Min validation error 0.006430081 for elems (0.01, 0.5)
+#Min validation error 0.0046402193 for elems (0.01, 0.75)
+#Min validation error 0.029264465 for elems (0.001, 0.25)
+#Min validation error 0.012221504 for elems (0.001, 0.5)
+#Min validation error 0.008622245 for elems (0.001, 0.75)
+#Global validation error 0.0046402193 for elems (0.01, 0.75)
+
+# GRU
+
+#Min validation error 0.0111637125 for elems (0.1, 0.25)
+#Min validation error 0.012049832 for elems (0.1, 0.5)
+#Min validation error 0.017291395 for elems (0.1, 0.75)
+#Min validation error 0.0037756523 for elems (0.01, 0.25)
+#Min validation error 0.002122913 for elems (0.01, 0.5)
+#Min validation error 0.0032095483 for elems (0.01, 0.75)
+#Min validation error 0.00797302 for elems (0.001, 0.25)
+#Min validation error 0.008556419 for elems (0.001, 0.5)
+#Min validation error 0.0030354045 for elems (0.001, 0.75)
+#Global validation error 0.002122913 for elems (0.01, 0.5)
+
+# LSTM
+
+#Min validation error 0.0039516427 for elems (0.1, 0.25)
+#Min validation error 0.016133798 for elems (0.1, 0.5)
+#Min validation error 0.008657359 for elems (0.1, 0.75)
+#Min validation error 0.0010539122 for elems (0.01, 0.25)
+#Min validation error 0.0023624634 for elems (0.01, 0.5)
+#Min validation error 0.002788953 for elems (0.01, 0.75)
+#Min validation error 0.002642741 for elems (0.001, 0.25)
+#Min validation error 0.0013699796 for elems (0.001, 0.5)
+#Min validation error 0.0020976907 for elems (0.001, 0.75)
+#Global validation error 0.0010539122 for elems (0.01, 0.25)
+
+
 input_dim=19 # dim > 1 for multivariate time series
 hidden_dim=100 # number of hiddent units h
-max_itr=2000 # number of training iterations
 keep_prob=0.5
 modelDir='modelDir'
-log=1000
-save=5000
+log=500 # How often we validate
 batch_size=16
-num_epochs=1
+num_epochs=15 # MAXIMUM number of epochs (i.e if early stopping is never achieved)
+early_stopping = 5 # Number of validation steps without improvement until we stop
+learning_rate = 0.01
+n_layers = 2
 
-# Different RNN Cell Types
-RNNcell = rnn.BasicRNNCell(hidden_dim)
+# NEED TO MAKE DIFFERENT COPIES OF THE CELL TO AVOID SELF-REFENTIAL ERRORS
+# RNNcell = [rnn.BasicRNNCell(hidden_dim) for _ in range(1)]
+# cellType = "RNN"
+
+RNNcell = [rnn.BasicRNNCell(hidden_dim) for _ in range(n_layers)]
 cellType = "RNN"
 
 # Build models and save model
-end_itr = build_and_save_d(modelDir=modelDir,
+end_itr, min_err = build_and_save_d(modelDir=modelDir,
                  train=train_data,
                  valid=valid_data,
+                 cell=RNNcell,
+                 cellType=cellType,
+                 input_dim=input_dim,
+                 hidden_dim=hidden_dim,
+                 seq_size=seq_len,
+                 keep_prob=keep_prob,
+                 batch_size=batch_size,
+                 num_epochs=num_epochs,
+                 log=log,
+                 early_stopping=early_stopping,
+                 learning_rate=learning_rate)
+
+
+RNNcell = [rnn.GRUCell(hidden_dim) for _ in range(n_layers)]
+cellType = "GRU"
+
+# Build models and save model
+end_itr, min_err = build_and_save_d(modelDir=modelDir,
+                 train=train_data,
+                 valid=valid_data,
+                 cell=RNNcell,
+                 cellType=cellType,
+                 input_dim=input_dim,
+                 hidden_dim=hidden_dim,
+                 seq_size=seq_len,
+                 keep_prob=keep_prob,
+                 batch_size=batch_size,
+                 num_epochs=num_epochs,
+                 log=log,
+                 early_stopping=early_stopping,
+                 learning_rate=learning_rate)
+
+RNNcell = [rnn.BasicLSTMCell(hidden_dim) for _ in range(n_layers)]
+cellType = "LSTM"
+
+# Build models and save model
+end_itr, min_err = build_and_save_d(modelDir=modelDir,
+                 train=train_data,
+                 valid=valid_data,
+                 cell=RNNcell,
+                 cellType=cellType,
+                 input_dim=input_dim,
+                 hidden_dim=hidden_dim,
+                 seq_size=seq_len,
+                 keep_prob=keep_prob,
+                 batch_size=batch_size,
+                 num_epochs=num_epochs,
+                 log=log,
+                 early_stopping=early_stopping,
+                 learning_rate=learning_rate)
+
+# In[ ]:
+
+modelDir="modelDir"
+cellType="GRU"
+end_itr=16000
+# Load and predict
+predicted_vals_rnn=load_and_predict(test_data,modelDir,cellType,end_itr,seq_len)
+
+# Compute MSE
+# step 1: denormalize data
+predicted_vals_dnorm_rnn=predicted_vals_rnn*(max_dataset-min_dataset)+min_dataset
+# step 2: get ground-truth, also must be denormalized
+actual_test= np.array([x[-1] for x in test_data.response])*(max_dataset-min_dataset)+min_dataset
+# step 3: compute MSE
+mse_rnn= ((predicted_vals_dnorm_rnn - actual_test) ** 2).mean()
+ 
+print("RNN MSE = %10.5f"%mse_rnn)
+
+pred_len=len(predicted_vals_dnorm_rnn)
+train_len=len(test_data.features)
+
+pred_avg = []
+actual_avg = []
+# Compute the moving average of each set for visual purposes
+moving_length = 24
+for i in range(len(actual_test) - moving_length):
+    pred_avg.append(np.mean(predicted_vals_dnorm_rnn[i:i+moving_length]))
+    actual_avg.append(np.mean(actual_test[i:i+moving_length]))
+
+# Plot the results
+plt.figure()
+plt.plot(list(range(len(actual_test))), predicted_vals_dnorm_rnn, color='r', label=cellType)
+plt.plot(list(range(len(actual_test))), actual_test, color='g', label='Actual')
+plt.plot(list(range(int(moving_length/2), len(actual_test)-int(moving_length/2))), pred_avg, color='y', label="{0} MA".format(cellType))
+plt.plot(list(range(int(moving_length/2), len(actual_test)-int(moving_length/2))), actual_avg, color='b', label="Actual MA")
+plt.legend()
+
+###########################################################################################################################
+############# Part 2: Weather Type Prediction #############################################################################
+###########################################################################################################################
+# In[ ]: 
+
+# Start on the second problem
+
+# Create the observations the same as in part 1, but now the
+# response is a one hot encoded vector
+
+
+# In[ ]:
+
+def build_and_save_d2(modelDir,train,valid,cell,cellType,input_dim=1,hidden_dim=100,
+                          seq_size = 12,max_itr=200,keep_prob=0.5, batch_size=32, num_epochs=10,log=500,save=1000):
+    tf.reset_default_graph()
+    graph = tf.Graph()
+    with graph.as_default():
+        # input place holders, note the change in dimensions in y, which 
+        # now has 7 dimensions
+        
+        # input Shape: [# training examples, sequence length, # features]
+        x = tf.placeholder(tf.float32,[None,seq_size,input_dim],name="x_in")
+        # label Shape: [# training examples, sequence length, # classes]
+        y = tf.placeholder(tf.float32,[None,seq_size,7],name="y_in")
+        dropout = tf.placeholder(tf.float32,name="dropout_in")
+        
+        # Function to wrap each cell with dropout
+        def wrap_cell(cell, keep_prob):
+            drop = tf.nn.rnn_cell.DropoutWrapper(cell, output_keep_prob=keep_prob)
+            return drop
+        
+        cells = tf.nn.rnn_cell.MultiRNNCell(
+                 [wrap_cell(cell,keep_prob) for cell in cell]
+         )
+        
+        # RNN output Shape: [# training examples, sequence length, # hidden] 
+        outputs, _ = tf.nn.dynamic_rnn(cells,x,dtype=tf.float32)
+        
+        
+        # weights for output dense layer (i.e., after RNN)
+        # W shape: [# hidden, 7]
+        W_out = tf.Variable(tf.random_normal([hidden_dim,7]),name="w_out") 
+        # b shape: [7]
+        b_out = tf.Variable(tf.random_normal([7]),name="b_out")
+    
+        # output dense layer:
+        num_examples = tf.shape(x)[0] 
+        # convert W from [# hidden, 7] to [# training examples, # hidden, 7]
+        # step 1: add a new dimension at index 0 using tf.expand_dims
+        w_exp= tf.expand_dims(W_out,0)
+        # step 2: duplicate W for 'num_examples' times using tf.tile
+        W_repeated = tf.tile(w_exp,[num_examples,1,1])
+        
+        # Dense Layer calculation: 
+        # [# training examples, sequence length, # hidden] *
+        # [# training examples, # hidden, 1] = [# training examples, sequence length]
+        
+        y_pred = tf.matmul(outputs,W_repeated) + b_out
+        
+        # Cost & Training Step
+        # Minimize error with softmax cross entropy
+        cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=y_pred, labels=y))
+        train_op = tf.train.AdamOptimizer(learning_rate=0.01).minimize(cost)
+        saver=tf.train.Saver()
+        
+        # Run Session
+        with tf.Session(graph=graph) as sess:
+            # initialize variables
+            sess.run(tf.global_variables_initializer())
+            # Run for 1000 iterations (1000 is arbitrary, need a validation set to tune!)
+            start=timeit.default_timer()
+            epoch_counter = 0 # Keep track of our epochs
+            i = 0 # Keep track of our iterations
+            min_validation_err = sys.float_info.max # Start min error at biggest number
+            min_validation_itr = 0 # Keep track of the smallest validation error we have seen so far
+            early_stopping_counter = 0 # Counter to see if we have acheived early stopping
+            
+            print('Training %s ...'%cellType)
+            while True: # If we train more, would we overfit? Try 10000
+                i += 1 # Increment counter
+                trainX, trainY, done = train.next_batch(batch_size) # Get train batch
+                # See if we are done with our epochs
+                if done:
+                    epoch_counter += 1
+                    print("Done with epoch " + str(epoch_counter))
+                    if epoch_counter >= num_epochs:
+                        break
+                
+                # Pass the data through the network
+                _, train_err = sess.run([train_op,cost],feed_dict={x:trainX,y:trainY,dropout:keep_prob})
+                if i==0:
+                    print('  step, train err= %6d: %8.5f' % (0,train_err))
+                # Every 'log' steps, print out train error and validation error.
+                # Update early stopping at these points
+                elif  (i+1) % log == 0: 
+                    print('  step, train err= %6d: %8.5f' % (i+1,train_err)) 
+                    
+                    # Get validation error on the full validation set
+                    valid_err = sess.run(cost,feed_dict={x:valid.features,y:valid.response,dropout:1})
+                    print('  step, validation err= %6d: %8.5f' % (i+1,valid_err)) 
+                    
+                    # Check early stopping
+                    early_stopping_counter += 1
+                    # If we have smaller validation error, reset counter and
+                    # assign new smallest validation error. Also store the
+                    # current iterqtion as the iteration where the current min is
+                    if valid_err < min_validation_err:
+                        min_validation_err = valid_err
+                        min_validation_itr = i + 1
+                        early_stopping_counter = 0
+                        
+                        # Store the current best model
+                        modelPath= saver.save(sess,"%s/model_%s"%(modelDir,cellType),global_step=i+1)
+                        print("model saved:%s"%modelPath) 
+                    
+                    # Break if we achieve early stopping
+                    if early_stopping_counter > early_stopping:
+                        break
+       
+            end=timeit.default_timer()        
+            print("Training time : %10.5f"%(end-start))
+        return min_validation_itr, min_validation_err
+
+input_dim=19 # dim > 1 for multivariate time series
+hidden_dim=100 # number of hiddent units h
+keep_prob=0.5
+modelDir='modelDir2' # Make sure to use a different model dir
+log=1000 # How often we validate
+batch_size=16
+num_epochs=3 # MAXIMUM number of epochs (i.e if early stopping is never achieved)
+early_stopping = 10 # Number of validation steps without improvement until we stop
+
+# Different RNN Cell Types
+# NEED TO MAKE DIFFERENT COPIES OF THE CELL TO AVOID SELF-REFENTIAL ERRORS
+RNNcell = [rnn.BasicRNNCell(hidden_dim) for _ in range(2)]
+cellType = "RNN"
+
+# Build models and save model
+end_itr, min_err = build_and_save_d2(modelDir=modelDir,
+                 train=train_data2,
+                 valid=valid_data2,
                  cell=RNNcell,
                  cellType=cellType,
                  input_dim=input_dim,
@@ -517,40 +939,44 @@ end_itr = build_and_save_d(modelDir=modelDir,
                  log=log,
                  save=save)
 
-           
+print("Min validation error {0}".format(str(min_err)))
+
+# In[ ]:
+def load_and_predict2(test,modelDir,cellType,itr,seq_size):
+    with tf.Session() as sess:
+        print ("Load model:%s-%s"%(modelDir,itr))
+        saver = tf.train.import_meta_graph("%s/model_%s-%s.meta"%(modelDir,cellType,itr))
+        saver.restore(sess,tf.train.latest_checkpoint("%s"%modelDir))
+        graph = tf.get_default_graph()
+        
+        x = graph.get_tensor_by_name("x_in:0")
+        dropout= graph.get_tensor_by_name("dropout_in:0")
+        y_pred = graph.get_tensor_by_name("y_out:0")
+        
+        predicted_vals_all= sess.run(y_pred, feed_dict={ x: test.features, dropout:1})
+        # Get last item in each predicted sequence:
+        predicted_vals = predicted_vals_all[:,seq_size-1]
+    return predicted_vals
+        
+# Load and predict
+predicted_vals_rnn=load_and_predict2(test_data2,modelDir,cellType,end_itr,seq_len)
+
+print(predicted_vals_rnn)
+# Compute MSE
+# step 2: get ground-truth
+actual_test= np.array([x[-1] for x in test_data2.response])
+
+# Get raw accuracy
+sum(np.argmax(actual_test, axis=1) == np.argmax(predicted_vals_rnn, axis=1))/len(actual_test)
+
 # In[ ]:
 
+# Calculate f1_score
 
-# Load and predict
-predicted_vals_rnn=load_and_predict(test_data,modelDir,cellType,end_itr,seq_len)
-
-# Compute MSE
-# step 1: denormalize data
-predicted_vals_dnorm_rnn=predicted_vals_rnn*(max_dataset-min_dataset)+min_dataset
-# step 2: get ground-truth
-actual_test= np.array([x[-1] for x in test_data.response])*(max_dataset-min_dataset)+min_dataset
-# step 3: compute MSE
-mse_rnn= ((predicted_vals_dnorm_rnn - actual_test) ** 2).mean()
- 
-print("RNN MSE = %10.5f"%mse_rnn)
-
-# Plot predictions
-pred_len=len(predicted_vals_dnorm_rnn)
-train_len=len(test_data.features)
-
-pred_avg = []
-actual_avg = []
-
-moving_length = 24
-for i in range(len(actual_test) - moving_length):
-    pred_avg.append(np.mean(predicted_vals_dnorm_rnn[i:i+moving_length]))
-    actual_avg.append(np.mean(actual_test[i:i+moving_length]))
-
-
-plt.figure()
-plt.plot(list(range(len(actual_test))), predicted_vals_dnorm_rnn, color='r', label=cellType)
-plt.plot(list(range(len(actual_test))), actual_test, color='g', label='Actual')
-plt.plot(list(range(int(moving_length/2), len(actual_test)-int(moving_length/2))), pred_avg, color='y', label="{0} MA".format(cellType))
-plt.plot(list(range(int(moving_length/2), len(actual_test)-int(moving_length/2))), actual_avg, color='b', label="Actual MA")
-plt.legend()
-
+# Convert the continuous valued predictions
+# to one hot
+preds = np.zeros([len(actual_test), 7])
+for i in range(len(actual_test)):
+    preds[i, np.argmax(predicted_vals_rnn[i])] = 1
+# Use the weighted version for more accuracy in the multiclass setting
+f1_score(actual_test, preds, average="weighted")
