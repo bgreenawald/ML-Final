@@ -22,6 +22,8 @@ from sklearn.preprocessing import MinMaxScaler
 import timeit
 import random
 import sys
+import os
+
 # # Preprocessing
 
 ###########################################################################################################################
@@ -95,6 +97,22 @@ df_final = reduce(lambda left, right : pd.merge(left, right, left_index = True, 
 
 # In[6]:
 
+# Get number of nulls for Charlotte - SUPER CONVOLUTED, but it works
+temp = df_final.reset_index()
+temp = temp[temp.city == "Charlotte"]
+temp.isnull().sum()
+
+#city                     0
+#datetime                 0
+#latitude                 0
+#longitude                0
+#temperature              3
+#humidity               589
+#pressure                 3
+#wind_speed               2
+#wind_direction           1
+#weather_description      1
+#dtype: int64
 
 # INTERPOLATION HAPPENS HERE -- Break up by city
 df_final = df_final.groupby('city').apply(lambda group: group.interpolate(limit_direction = 'both'))
@@ -192,7 +210,7 @@ df_final_scaled = df_final_scaled.drop('weather_description', axis = 1)
 # In[16]:
 
 
-# And one-hot encode the wind_directions, NOT weather description since it is the response
+# And one-hot encode the wind_directions and weather
 df_final_scaled = pd.get_dummies(df_final_scaled, prefix=['wind_dir', 'weather'], 
                                  columns=['wind_direction', 'adj_weather'])
 
@@ -230,9 +248,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.contrib import rnn
+from sklearn.metrics import f1_score
 import random
 import timeit
 import sys
+from collections import defaultdict
 
 # In[2]:
 
@@ -248,7 +268,7 @@ current_city = "Charlotte"
 
 full_df = full_df[full_df["city"] == current_city]
 
-min_dataset = 0.5149999994000041
+min_dataset = 0.515
 max_dataset = 99.95
 
 # In[4]:
@@ -274,18 +294,19 @@ test.drop(["city", "datetime"], inplace=True, axis=1)
 # Modified from Mohammad al Boni
 
 class DataSet(object):
-    def __init__(self, x, y):
+    def __init__(self, x, y, shuffle=True):
         self._num_examples = len(x)
         self._x = x
         self._y = y
         self._epochs_done = 0
         self._index_in_epoch = 0
-        np.random.seed(123456)
-        # Shuffle the data
-        perm = np.arange(self._num_examples)
-        np.random.shuffle(perm)
-        self._x = [self._x[i] for i in perm]
-        self._y = [self._y[i] for i in perm]
+        if shuffle:
+            np.random.seed(123456)
+            # Shuffle the data
+            perm = np.arange(self._num_examples)
+            np.random.shuffle(perm)
+            self._x = [self._x[i] for i in perm]
+            self._y = [self._y[i] for i in perm]
         random.seed(123456)
     @property
     def features(self):
@@ -332,8 +353,6 @@ class DataSet(object):
 
 # In[26]:
 
-# Define size of sequence, 1 day for now
-seq_len = 24
 
 # Wrapper function to perform the entire creation of observations given the subset
 # data. Can specify sequence_size, lookahead, response (temp means 'temperature'),
@@ -390,31 +409,40 @@ def create_observations(train, test, valid, seq_size = 24, lookahead = 1, temp =
             # temperature of the next hour. This is the trivial case where our prediction for temp
             # is just the current temp
             if baseline:
-                test_baseline_err.append((np.mean(train.iloc[i+seq_len - 1, 0]*(max_dataset-min_dataset)+min_dataset) - 
-                                      (train.iloc[i+seq_len + lookahead - 1, 0]*(max_dataset-min_dataset)+min_dataset)) ** 2)
+                test_baseline_err.append((np.mean(test.iloc[i:i+seq_len, 0]*(max_dataset-min_dataset)+min_dataset) - 
+                                      (test.iloc[i+seq_len + lookahead - 1, 0]*(max_dataset-min_dataset)+min_dataset)) ** 2)
         
         if baseline:
             print("Baseline error of: " + str(np.mean(test_baseline_err)))
-        # Test baseline error of 2.7059362148173807
+        # Test baseline for seq 1: 29.66645546285467
+        # Test baseline for seq 2: 34.86351968736361
+        # Test baseline error for seq 24: 34.01255035338878
+        # Test baseline error for seq 72: 42.73780841606058  
     else:
+        
         for i in range(test.shape[0] - seq_len - lookahead + 1):
             test_x.append([x for x in test.iloc[i:i+seq_len, :].values])
-            test_y.append([y for y in test.iloc[i+lookahead:i+seq_len+lookahead, 0]])
-        
+            test_y.append([y for y in test.iloc[i+lookahead:i+seq_len+lookahead, -7:].values])
+            
+
             if baseline:        
-                # Compare current weather type with next weather type
-                test_baseline_err.append(test.iloc[i + seq_len - 1, -7:].values == test.iloc[i + seq_len + lookahead - 1, -7:].values)
+                # Compare current weather type with the most common weather type over a period
+                
+                # Variable to hold most frequent weather type
+                x_obs = np.array([sum(x) for x in zip(*test.iloc[i:i+seq_len, -7:].values)])
+                
+                # Append equality of current prediction and true value to error list
+                test_baseline_err.append(np.argmax(x_obs) == np.argmax(test.iloc[i + seq_len + lookahead - 1, -7:].values))
+                
                 
         if baseline:
             print("Baseline error of: " + str(np.mean(test_baseline_err)))
+
         # Test baseline error of 2.7059362148173807
     
-    test_data = DataSet(test_x, test_y)
+    test_data = DataSet(test_x, test_y, shuffle=False)
     
     return train_data, valid_data, test_data
-
-
-train_data,valid_data,test_data = create_observations(train, valid, test, seq_size=seq_len, lookahead=4, baseline=True)
 
 # In[11]:
 
@@ -593,6 +621,54 @@ def load_and_predict(test,modelDir,cellType,itr,seq_size):
         predicted_vals = predicted_vals_all[:,seq_size-1]
     return predicted_vals
 
+# In[ ]:
+
+# Function to predict and plot the test set
+def predict(test_data, modelDir, cellType, end_itr, seq_len):
+    # Load and predict
+    predicted_vals_rnn=load_and_predict(test_data,modelDir,cellType,end_itr,seq_len)
+    
+    # Compute MSE
+    # step 1: denormalize data
+    predicted_vals_dnorm_rnn=predicted_vals_rnn*(max_dataset-min_dataset)+min_dataset
+    # step 2: get ground-truth, also must be denormalized
+    actual_test= np.array([x[-1] for x in test_data.response])*(max_dataset-min_dataset)+min_dataset
+    # step 3: compute MSE
+    mse_rnn= ((predicted_vals_dnorm_rnn - actual_test) ** 2).mean()
+     
+    print("RNN MSE = %10.5f"%mse_rnn)
+    
+    pred_len=len(predicted_vals_dnorm_rnn)
+    train_len=len(test_data.features)
+    
+    pred_avg = []
+    actual_avg = []
+    # Compute the moving average of each set for visual purposes
+    moving_length = 24
+    for i in range(len(actual_test) - moving_length):
+        pred_avg.append(np.mean(predicted_vals_dnorm_rnn[i:i+moving_length]))
+        actual_avg.append(np.mean(actual_test[i:i+moving_length]))
+    
+    # Plot the results
+    plt.figure()
+    plt.plot(list(range(len(actual_test))), actual_test, label="Actual", color='r', alpha=1)
+    plt.plot(list(range(len(actual_test))), predicted_vals_dnorm_rnn, color='b',  label=cellType, alpha=0.6)
+#    plt.plot(list(range(int(moving_length/2), len(actual_test)-int(moving_length/2))), pred_avg, color='y', label="{0} MA".format(cellType), alpha=0.7)
+#    plt.plot(list(range(int(moving_length/2), len(actual_test)-int(moving_length/2))), actual_avg, color='b', label="Actual MA", alpha=0.7)
+    plt.title("Cell Type: " + cellType + ", Sequence Length " + str(seq_len))
+    plt.legend()
+    plt.savefig("{0}{1}.png".format(cellType, seq_len))
+
+
+# In[11]:
+
+# Define size of sequence
+seq_len = 2
+
+train_data,valid_data,test_data = create_observations(train, valid, test, seq_size=seq_len, temp=True, lookahead=4, baseline=False)
+
+
+# In[ ]:
 
 """
 # Perform a crude grid search
@@ -615,7 +691,7 @@ for elem in product(*params):
                      valid=valid_data,
                      cell=RNNcell,
                      cellType=cellType,
-                     input_dim=input_dim,
+                     input_dim=input_dim,=
                      hidden_dim=hidden_dim,
                      seq_size=seq_len,
                      keep_prob=keep_prob,
@@ -674,6 +750,7 @@ print("Global validation error " + str(min_param_val) + " for elems " + str(min_
 #Min validation error 0.0020976907 for elems (0.001, 0.75)
 #Global validation error 0.0010539122 for elems (0.01, 0.25)
 
+# Seems pretty close overall, choose 0.01 and dropout 0.5
 
 input_dim=19 # dim > 1 for multivariate time series
 hidden_dim=100 # number of hiddent units h
@@ -709,6 +786,7 @@ end_itr, min_err = build_and_save_d(modelDir=modelDir,
                  early_stopping=early_stopping,
                  learning_rate=learning_rate)
 
+predict(test_data, modelDir, cellType, end_itr, seq_len)
 
 RNNcell = [rnn.GRUCell(hidden_dim) for _ in range(n_layers)]
 cellType = "GRU"
@@ -729,6 +807,8 @@ end_itr, min_err = build_and_save_d(modelDir=modelDir,
                  early_stopping=early_stopping,
                  learning_rate=learning_rate)
 
+predict(test_data, modelDir, cellType, end_itr, seq_len)
+
 RNNcell = [rnn.BasicLSTMCell(hidden_dim) for _ in range(n_layers)]
 cellType = "LSTM"
 
@@ -748,42 +828,8 @@ end_itr, min_err = build_and_save_d(modelDir=modelDir,
                  early_stopping=early_stopping,
                  learning_rate=learning_rate)
 
-# In[ ]:
 
-modelDir="modelDir"
-cellType="GRU"
-end_itr=16000
-# Load and predict
-predicted_vals_rnn=load_and_predict(test_data,modelDir,cellType,end_itr,seq_len)
-
-# Compute MSE
-# step 1: denormalize data
-predicted_vals_dnorm_rnn=predicted_vals_rnn*(max_dataset-min_dataset)+min_dataset
-# step 2: get ground-truth, also must be denormalized
-actual_test= np.array([x[-1] for x in test_data.response])*(max_dataset-min_dataset)+min_dataset
-# step 3: compute MSE
-mse_rnn= ((predicted_vals_dnorm_rnn - actual_test) ** 2).mean()
- 
-print("RNN MSE = %10.5f"%mse_rnn)
-
-pred_len=len(predicted_vals_dnorm_rnn)
-train_len=len(test_data.features)
-
-pred_avg = []
-actual_avg = []
-# Compute the moving average of each set for visual purposes
-moving_length = 24
-for i in range(len(actual_test) - moving_length):
-    pred_avg.append(np.mean(predicted_vals_dnorm_rnn[i:i+moving_length]))
-    actual_avg.append(np.mean(actual_test[i:i+moving_length]))
-
-# Plot the results
-plt.figure()
-plt.plot(list(range(len(actual_test))), predicted_vals_dnorm_rnn, color='r', label=cellType)
-plt.plot(list(range(len(actual_test))), actual_test, color='g', label='Actual')
-plt.plot(list(range(int(moving_length/2), len(actual_test)-int(moving_length/2))), pred_avg, color='y', label="{0} MA".format(cellType))
-plt.plot(list(range(int(moving_length/2), len(actual_test)-int(moving_length/2))), actual_avg, color='b', label="Actual MA")
-plt.legend()
+predict(test_data, modelDir, cellType, end_itr, seq_len)
 
 ###########################################################################################################################
 ############# Part 2: Weather Type Prediction #############################################################################
@@ -844,10 +890,11 @@ def build_and_save_d2(modelDir,train,valid,cell,cellType,input_dim=1,hidden_dim=
         # [# training examples, # hidden, 1] = [# training examples, sequence length]
         
         y_pred = tf.matmul(outputs,W_repeated) + b_out
+        y_pred = tf.add(y_pred, b_out, name="y_out")
         
         # Cost & Training Step
         # Minimize error with softmax cross entropy
-        cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=y_pred, labels=y))
+        cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logitsv2(logits=y_pred, labels=y))
         train_op = tf.train.AdamOptimizer(learning_rate=0.01).minimize(cost)
         saver=tf.train.Saver()
         
@@ -862,7 +909,7 @@ def build_and_save_d2(modelDir,train,valid,cell,cellType,input_dim=1,hidden_dim=
             min_validation_err = sys.float_info.max # Start min error at biggest number
             min_validation_itr = 0 # Keep track of the smallest validation error we have seen so far
             early_stopping_counter = 0 # Counter to see if we have acheived early stopping
-            
+            min_accuracy=None
             print('Training %s ...'%cellType)
             while True: # If we train more, would we overfit? Try 10000
                 i += 1 # Increment counter
@@ -884,8 +931,14 @@ def build_and_save_d2(modelDir,train,valid,cell,cellType,input_dim=1,hidden_dim=
                     print('  step, train err= %6d: %8.5f' % (i+1,train_err)) 
                     
                     # Get validation error on the full validation set
-                    valid_err = sess.run(cost,feed_dict={x:valid.features,y:valid.response,dropout:1})
-                    print('  step, validation err= %6d: %8.5f' % (i+1,valid_err)) 
+                    valid_err, pred = sess.run([cost, y_pred],feed_dict={x:valid.features,y:valid.response,dropout:1})
+                    print('  step, validation err= %6d: %8.5f' % (i+1,valid_err))
+                    pred = pred[:,seq_size-1]
+                    actual_valid = np.array([x[-1] for x in valid.response])
+                    # Look at the distribution of the output
+                    amax = np.argmax(pred, axis=1)
+                    accuracy = sum(np.argmax(actual_valid, axis=1) == np.argmax(pred, axis=1))/len(pred)
+                    print("Accuracy of: " + str(accuracy))
                     
                     # Check early stopping
                     early_stopping_counter += 1
@@ -896,7 +949,7 @@ def build_and_save_d2(modelDir,train,valid,cell,cellType,input_dim=1,hidden_dim=
                         min_validation_err = valid_err
                         min_validation_itr = i + 1
                         early_stopping_counter = 0
-                        
+                        min_accuracy = accuracy
                         # Store the current best model
                         modelPath= saver.save(sess,"%s/model_%s"%(modelDir,cellType),global_step=i+1)
                         print("model saved:%s"%modelPath) 
@@ -907,39 +960,17 @@ def build_and_save_d2(modelDir,train,valid,cell,cellType,input_dim=1,hidden_dim=
        
             end=timeit.default_timer()        
             print("Training time : %10.5f"%(end-start))
+            
+            # Log the results to a file
+            with open(modelDir + "/results.txt", 'a+') as file:
+                file.write(cellType + "\n")
+                file.write("Time taken: " + str(end - start) + "\n")
+                file.write("Itr stopped: " + str(min_validation_itr) + "\n")
+                file.write("Min validation error: " + str(min_validation_err) + "\n")
+                file.write("Min validation accuracy: " + str(min_accuracy) + "\n\n")
+                
         return min_validation_itr, min_validation_err
 
-input_dim=19 # dim > 1 for multivariate time series
-hidden_dim=100 # number of hiddent units h
-keep_prob=0.5
-modelDir='modelDir2' # Make sure to use a different model dir
-log=1000 # How often we validate
-batch_size=16
-num_epochs=3 # MAXIMUM number of epochs (i.e if early stopping is never achieved)
-early_stopping = 10 # Number of validation steps without improvement until we stop
-
-# Different RNN Cell Types
-# NEED TO MAKE DIFFERENT COPIES OF THE CELL TO AVOID SELF-REFENTIAL ERRORS
-RNNcell = [rnn.BasicRNNCell(hidden_dim) for _ in range(2)]
-cellType = "RNN"
-
-# Build models and save model
-end_itr, min_err = build_and_save_d2(modelDir=modelDir,
-                 train=train_data2,
-                 valid=valid_data2,
-                 cell=RNNcell,
-                 cellType=cellType,
-                 input_dim=input_dim,
-                 hidden_dim=hidden_dim,
-                 seq_size=seq_len,
-                 max_itr=max_itr,
-                 keep_prob=keep_prob,
-                 batch_size=batch_size,
-                 num_epochs=num_epochs,
-                 log=log,
-                 save=save)
-
-print("Min validation error {0}".format(str(min_err)))
 
 # In[ ]:
 def load_and_predict2(test,modelDir,cellType,itr,seq_size):
@@ -957,26 +988,113 @@ def load_and_predict2(test,modelDir,cellType,itr,seq_size):
         # Get last item in each predicted sequence:
         predicted_vals = predicted_vals_all[:,seq_size-1]
     return predicted_vals
-        
-# Load and predict
-predicted_vals_rnn=load_and_predict2(test_data2,modelDir,cellType,end_itr,seq_len)
 
-print(predicted_vals_rnn)
-# Compute MSE
-# step 2: get ground-truth
-actual_test= np.array([x[-1] for x in test_data2.response])
 
-# Get raw accuracy
-sum(np.argmax(actual_test, axis=1) == np.argmax(predicted_vals_rnn, axis=1))/len(actual_test)
+# In[ ]:
+def predict_type(test,modelDir,cellType,itr,seq_size):
+
+    # Load and predict
+    predicted_vals_rnn=load_and_predict2(test_data2,modelDir,cellType,end_itr,seq_len)
+    
+    # Compute accuracy
+    # step 2: get ground-truth
+    actual_test= np.array([x[-1] for x in test_data2.response])
+    
+    # Get raw accuracy
+    accuracy = sum(np.argmax(actual_test, axis=1) == np.argmax(predicted_vals_rnn, axis=1))/len(actual_test)
+    print("Accuracy: " + str(accuracy))
+    # Calculate f1_score
+    
+    # Convert the continuous valued predictions
+    # to one hot
+    preds = np.zeros([len(actual_test), 7])
+    for i in range(len(actual_test)):
+        preds[i, np.argmax(predicted_vals_rnn[i])] = 1
+    # Use the weighted version for more accuracy in the multiclass setting
+    print("F1 score: " + str(f1_score(actual_test, preds, average="weighted")))
+    
 
 # In[ ]:
 
-# Calculate f1_score
+# Define size of sequence, 1 day for now
+seq_len = 2
 
-# Convert the continuous valued predictions
-# to one hot
-preds = np.zeros([len(actual_test), 7])
-for i in range(len(actual_test)):
-    preds[i, np.argmax(predicted_vals_rnn[i])] = 1
-# Use the weighted version for more accuracy in the multiclass setting
-f1_score(actual_test, preds, average="weighted")
+train_data2,valid_data2,test_data2 = create_observations(train, valid, test, seq_size=seq_len, temp=False, lookahead=4, baseline=True)
+
+# In[ ]:
+
+input_dim=19 # dim > 1 for multivariate time series
+hidden_dim=100 # number of hiddent units h
+keep_prob=0.75
+modelDir='modelDir2' # Make sure to use a different model dir
+log=500 # How often we validate
+batch_size=16
+num_epochs=15 # MAXIMUM number of epochs (i.e if early stopping is never achieved)
+early_stopping=10 # Number of validation steps without improvement until we stop
+num_layers = 2
+
+# Different RNN Cell Types
+# NEED TO MAKE DIFFERENT COPIES OF THE CELL TO AVOID SELF-REFENTIAL ERRORS
+RNNcell = [rnn.BasicRNNCell(hidden_dim) for _ in range(num_layers)]
+cellType = "RNN"
+
+# Build models and save model
+end_itr, min_err = build_and_save_d2(modelDir=modelDir,
+                 train=train_data2,
+                 valid=valid_data2,
+                 cell=RNNcell,
+                 cellType=cellType,
+                 input_dim=input_dim,
+                 hidden_dim=hidden_dim,
+                 seq_size=seq_len,
+                 keep_prob=keep_prob,
+                 batch_size=batch_size,
+                 num_epochs=num_epochs,
+                 log=log)
+
+predict_type(test_data2, modelDir, cellType, end_itr, seq_len)
+
+RNNcell = [rnn.GRUCell(hidden_dim) for _ in range(num_layers)]
+cellType = "GRU"
+
+
+
+# Build models and save model
+end_itr, min_err = build_and_save_d2(modelDir=modelDir,
+                 train=train_data2,
+                 valid=valid_data2,
+                 cell=RNNcell,
+                 cellType=cellType,
+                 input_dim=input_dim,
+                 hidden_dim=hidden_dim,
+                 seq_size=seq_len,
+                 keep_prob=keep_prob,
+                 batch_size=batch_size,
+                 num_epochs=num_epochs,
+                 log=log)
+
+predict_type(test_data2, modelDir, cellType, end_itr, seq_len)
+
+RNNcell = [rnn.BasicLSTMCell(hidden_dim) for _ in range(num_layers)]
+cellType = "LSTM"
+
+
+# Build models and save model
+end_itr, min_err = build_and_save_d2(modelDir=modelDir,
+                 train=train_data2,
+                 valid=valid_data2,
+                 cell=RNNcell,
+                 cellType=cellType,
+                 input_dim=input_dim,
+                 hidden_dim=hidden_dim,
+                 seq_size=seq_len,
+                 keep_prob=keep_prob,
+                 batch_size=batch_size,
+                 num_epochs=num_epochs,
+                 log=log)
+
+predict_type(test_data2, modelDir, cellType, end_itr, seq_len)
+
+# In[ ]:
+
+# Really bad results 

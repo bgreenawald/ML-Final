@@ -1,0 +1,78 @@
+2 
+
+RNN
+
+Training time :   26.06421
+Load model:modelDir2-3000
+INFO:tensorflow:Restoring parameters from modelDir2/model_RNN-3000
+Accuracy: 0.5818430345141816
+F1 score: 0.5751496500102374
+
+GRU
+
+Training time :   68.72410
+Load model:modelDir2-9500
+INFO:tensorflow:Restoring parameters from modelDir2/model_GRU-9500
+Accuracy: 0.5961954664540381
+F1 score: 0.5916327029106627
+
+LSTM
+
+Training time :   71.13695
+Load model:modelDir2-11500
+INFO:tensorflow:Restoring parameters from modelDir2/model_LSTM-11500
+Accuracy: 0.6037134069939629
+F1 score: 0.5971185305032227
+
+24
+
+
+RNN
+
+Training time :   78.50333
+Load model:modelDir2-3000
+INFO:tensorflow:Restoring parameters from modelDir2/model_RNN-3000
+Accuracy: 0.5922119447299303
+F1 score: 0.5910033794373887
+
+GRU
+
+Training time :   88.32919
+Load model:modelDir2-1000
+INFO:tensorflow:Restoring parameters from modelDir2/model_GRU-1000
+Accuracy: 0.5928971108827223
+F1 score: 0.5792721833038622
+
+LSTM 
+
+Training time :   90.14142
+Load model:modelDir2-1500
+INFO:tensorflow:Restoring parameters from modelDir2/model_LSTM-1500
+Accuracy: 0.6044307411213886
+F1 score: 0.5905284940134202
+
+72
+
+RNN
+
+Training time :  314.71831
+Load model:modelDir2-3500
+INFO:tensorflow:Restoring parameters from modelDir2/model_RNN-3500
+Accuracy: 0.5838787461246986
+F1 score: 0.5687409812194684
+
+GRU
+
+Training time :  409.06710
+Load model:modelDir2-500
+INFO:tensorflow:Restoring parameters from modelDir2/model_GRU-500
+Accuracy: 0.5920312320587897
+F1 score: 0.5844762323065641
+
+LSTM
+
+Training time :  398.69022
+Load model:modelDir2-1000
+INFO:tensorflow:Restoring parameters from modelDir2/model_LSTM-1000
+Accuracy: 0.5940980594787002
+F1 score: 0.5796382185477683
